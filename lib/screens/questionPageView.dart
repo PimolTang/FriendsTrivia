@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/screens/questionScreen.dart';
+import '../resources/constances.dart';
 
 class QuestionPageView extends StatefulWidget {
   @override
@@ -9,7 +11,7 @@ class QuestionPageView extends StatefulWidget {
 
 class _QuestionPageViewState extends State<QuestionPageView> {
 
-  PageController pageController = PageController();
+  PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +19,16 @@ class _QuestionPageViewState extends State<QuestionPageView> {
         backgroundColor: Colors.black,
         body: SafeArea(
           child: PageView.builder(
-              controller: (pageController = PageController(initialPage: 0)),
+              controller: (_pageController = PageController(initialPage: 0)),
               scrollDirection: Axis.horizontal,
               physics: AlwaysScrollableScrollPhysics(), // NeverScrollableScrollPhysics(),
-              itemCount: kTotalQuestionNum,
+              itemCount: kNumberOfQuestionsPerSet,
               itemBuilder: (context, index) {
                 return QuestionScreen(
                           secID: 1,
                           pageID: index,
                           bookmarked: true,
-                          onNextQ: null,
+                          onNextQ: _callBackNextQuestion,
                        );
               },
               onPageChanged: (index) {}
@@ -34,4 +36,18 @@ class _QuestionPageViewState extends State<QuestionPageView> {
         )
     );
   }
+
+  // Functions
+  void _callBackNextQuestion(int qID, int waitMilliSec) async {
+    if (qID < (kNumberOfQuestionsPerSet-1)) {
+      Timer(Duration(milliseconds: waitMilliSec), () {
+          _pageController.jumpToPage(qID + 1);
+      });
+    }  else {
+      Timer(Duration(milliseconds: 2800), () {
+          Navigator.pushNamed(context, '/scoresum');
+      });
+    }
+  }
+
 }

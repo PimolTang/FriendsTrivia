@@ -12,7 +12,7 @@ class RoundedMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: 11.0),
+        padding: EdgeInsets.symmetric(vertical: 10.0),
         child: Material(
           color: bgColor,
           borderRadius: BorderRadius.circular(12.0),
@@ -24,7 +24,7 @@ class RoundedMenuButton extends StatelessWidget {
             height: 42.0,
             child: ListTile(
               leading: Icon(menuIcon, size: 30.0, color: iconColor,),
-              title: text,
+              title: Align(child: text, alignment: Alignment.center,),
             ),
           ),
         )

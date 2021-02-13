@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/RoundedMenuButton.dart';
+import '../models/dbService.dart';
+import '../resources/constances.dart';
 
 class MainMenuScreen extends StatefulWidget {
   @override
@@ -13,6 +15,49 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
+        drawer: Theme (
+          data: Theme.of(context).copyWith(canvasColor: kColorWhite),
+          child: Align(alignment: Alignment.topLeft,
+            child: ClipRRect( borderRadius: BorderRadius.only(bottomRight: Radius.circular(40)),
+              child: Container (
+                width: 222,
+                height: 240, //180,
+                child:
+                Drawer(
+                  child:
+                  ListView(
+                    children: <Widget>[
+                      Container(alignment: Alignment.topLeft,
+                        child: ListTile(leading: Icon(Icons.menu),
+                          title: InkWell (child: Text('< Menu', style: kDefaultTS,),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),),
+                        color: kColorThemeGreen ,),
+                      Container(alignment: Alignment.topLeft,
+                        child: ListTile(leading: Icon(Icons.delete_forever),
+                          title: InkWell (child: Text('Reset Scores',style: kDefaultTS),
+                              onTap: () {
+                                // resetPracticeAnswersAlertDialog(context);
+                              }                                                                                     ),),
+                        color: kColorThemeTeal,),
+
+//                      Container(alignment: Alignment.topLeft,
+//                        child: ListTile(leading: Icon(Icons.delete_forever),
+//                          title: InkWell (child: Text('Reset AusValue answers'),
+//                              onTap: () { resetAusValueAnswersAlertDialog(context);
+//                              }
+//                          ),),
+//                        color: kColorGrey,),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
         appBar: AppBar(title: Text('Friends Trivia - 2021',
                        style: TextStyle(color: kColorWhite, fontFamily: kDefaultFont, fontWeight: FontWeight.w800),),
                        backgroundColor: kColorThemeTeal,
@@ -37,21 +82,26 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                          //--> Section 2.1:
-                          RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorWhite, menuIcon: Icons.weekend_outlined,
-                              text: Text("In Movie Trivia", style: kDefaultTS,),
-                              onPressed: () async {
-                                      // Load Fails Question Bank for failsScreen('fails') pages
-                                      Navigator.pushNamed(context, '/questions'); //, arguments: currStatus);
-                                    }
-                              ),
-                          //--> Section 2.2:
-                          RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorWhite, menuIcon: Icons.camera,
-                              text: Text("Behind The Screen Trivia", style: kDefaultTS),
-                              onPressed: null,
-
-                          ),
-
+                            //--> Section 2.1:
+                            RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
+                                menuIcon: Icons.weekend_outlined,
+                                text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorPureWhite),),
+                                onPressed: () async {
+                                       // Load Questions
+                                        await DBService.instance.refreshQuestionBankRandomly(1);
+                                        Navigator.pushNamed(context, '/questions'); //, arguments: currStatus);
+                                      },
+                                ),
+                            //--> Section 2.2:
+                            RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
+                              menuIcon: Icons.camera,
+                                text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorPureWhite)),
+                                onPressed: () async {
+                                        // Load Questions
+                                        await DBService.instance.refreshQuestionBankRandomly(2);
+                                        Navigator.pushNamed(context, '/questions'); //, arguments: currStatus);
+                                      },
+                            ),
                           ],
 
                   ),
@@ -79,6 +129,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         ),
       ),
     );
-
   }
+
 }

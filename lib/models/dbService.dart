@@ -3,65 +3,64 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-//import 'package:australiancitizenshiptest/model/questionBank.dart';
-//import 'package:australiancitizenshiptest/resources/constances.dart';
+import 'questionBank.dart';
+import 'package:friendstrivia/resources/constances.dart';
 
 class DBService {
   // Parameters for database and three tables;
   static final _dbName = 'ft.db';
   static final _dbVersion = 1;
   static final _tableNameQuestionBank = 'QuestionBank';
-  static final _tableNameScore = 'Score';
-  static final _tableNameStatus = 'Status';
-  static int currQuestionSet;
+  // static final _tableNameScore = 'Score';
+  //static final _tableNameStatus = 'Status';
+
   static int currID, currScore;
-//  static List<QuestionBank> currQBanks;
+  static List<QuestionBank> currQBanks;
+
 //  static List<QuestionBank> currTempQBanks;
-  static int currAusValueScore, nextUnansweredAusValueQuestion = -1;
+// static int currAusValueScore, nextUnansweredAusValueQuestion = -1;
 
 //  // Making it a singleton class (create an instance)
-//  DBService._privateConstructor();
-//  static final DBService instance = DBService._privateConstructor();
-//
-//  // Create private _database to use internally
-//  static Database _database;
-//
-//  // Variable of 'database' with get function!
-//  Future<Database> get database async {
-//    if (_database != null ) { return _database; }
-//    _database = await _initiateDB();
-//    return _database;
-//  }
-//
-//  // 'Initial DB' with linked 'OnCreate' function
-//  _initiateDB() async {
-//    Directory dir = await getApplicationDocumentsDirectory();
-//    String path = join(dir.path, _dbName); // print ('PATH + DBNAME = $path');
-//    return await openDatabase(path, version: _dbVersion, onCreate: _onCreate);
-//  }
-//
-//  Future _onCreate(Database db, int version) async {
-//    try {
-//      // NOTE: these three fields; inBonusSection, ausValueSelectedAnswer,
-//      //       ausValueIsCorrect will be removed in 2021.
-//      await db.execute(
-//          '''
-//               CREATE TABLE $_tableNameQuestionBank (
-//               questionSet INTEGER NOT NULL,
-//               questionID INTEGER NOT NULL,
-//               section INTEGER, question TEXT,
-//               answer1 TEXT, answer2 TEXT,
-//               answer3 TEXT, answer4 TEXT,
-//               correctAnswer INTEGER,
-//               selectedAnswer INTEGER,
-//               isCorrect INTEGER, skipReview INTEGER,
-//               inBonusSection INTEGER,
-//               ausValueSelectedAnswer INTEGER,
-//               ausValueIsCorrect INTEGER,
-//               PRIMARY KEY (questionSet, questionID)
-//               );
-//          ''');
-//
+  DBService._privateConstructor();
+  static final DBService instance = DBService._privateConstructor();
+
+  // Create private _database to use internally
+  static Database _database;
+
+  // Variable of 'database' with get function!
+  Future<Database> get database async {
+    if (_database != null ) { return _database; }
+    _database = await _initiateDB();
+    return _database;
+  }
+
+  // 'Initial DB' with linked 'OnCreate' function
+  _initiateDB() async {
+    Directory dir = await getApplicationDocumentsDirectory();
+    String path = join(dir.path, _dbName); // print ('PATH + DBNAME = $path');
+    return await openDatabase(path, version: _dbVersion, onCreate: _onCreate);
+  }
+
+  Future _onCreate(Database db, int version) async {
+    try {
+      // NOTE: these three fields; inBonusSection, ausValueSelectedAnswer,
+      //       ausValueIsCorrect will be removed in 2021.
+      await db.execute(
+          '''
+               CREATE TABLE $_tableNameQuestionBank (
+               sectionID INTEGER NOT NULL,
+               questionID INTEGER NOT NULL,
+               question TEXT,
+               answer1 TEXT, answer2 TEXT,
+               answer3 TEXT, answer4 TEXT,
+               correctAnswer INTEGER,
+               selectedAnswer INTEGER,
+               isCorrect INTEGER,               
+               gotSelected INTEGER,
+               PRIMARY KEY (sectionID, questionID)
+               );
+          ''');
+
 //      await db.execute(
 //          '''
 //               CREATE TABLE $_tableNameScore (
@@ -79,25 +78,47 @@ class DBService {
 //               currID INTEGER
 //               );
 //          ''');
-//
+
 //      // Initial Data - for Score and Status tables
 //      for (int i = 1; i <= kNumberOfQuestionSet; i++) {
 //        await db.execute('INSERT INTO $_tableNameScore (questionSet, score, dateTime, ausValueScore) VALUES ($i, -1, "", 0);');
 //      }
 //      // Initial Data for Status (currentQuestionSet and currID)
 //      await db.execute('INSERT INTO $_tableNameStatus (currQuestionSet, currID) VALUES (1,0);');
-//
-//    } catch (ex) {
-//      print( 'EXCEPTION: $ex');
-//    }
-//
-//  }
-//
-//  Future<int> countQuestionBank() async {
-//    Database db = await instance.database;
-//    List<Map<String,dynamic>> q = await db.rawQuery('Select questionSet from $_tableNameQuestionBank');
-//    return q.length;
-//  }
+
+    } catch (ex) {
+      print( 'EXCEPTION: $ex');
+    }
+
+  }
+
+  Future<int> countQuestionBank() async {
+    Database db = await instance.database;
+    List<Map<String,dynamic>> q = await db.rawQuery('Select questionID from $_tableNameQuestionBank');
+    return q.length;
+  }
+
+  void refreshQuestionBankRandomly (int secID) async {
+    // selectedAnswer	isCorrect	correctAnswer	isBookmarked
+    String baseStmt = "SELECT * FROM $_tableNameQuestionBank where sectionID = $secID " +
+                      "and gotSelected = 0 order by RANDOM() LIMIT $kNumberOfQuestionsPerSet";
+
+    Database db  = await instance.database;
+    String readyStmt = baseStmt; // and ($unansweredFlagClause $correctFlagClause $incorrectFlagClause $bookmarkedFlagClause)';
+    List<Map> rs = await db.rawQuery(readyStmt);
+
+    List<QuestionBank> qb = new List();
+    for (int i = 0; i < rs.length; i++) {
+      await qb.add(new QuestionBank(rs[i]["sectionID"], rs[i]["questionID"],
+          rs[i]["question"], rs[i]["answer1"], rs[i]["answer2"],
+          rs[i]["answer3"], rs[i]["answer4"],rs[i]["correctAnswer"],
+          rs[i]["selectedAnswer"], rs[i]["isCorrect"],rs[i]["gotSelected"])
+      );
+    }
+    currQBanks = await qb;
+  }
+
+
 //
 //  Future<int> refreshCurrentScoreByQuestionSet(int qSet) async {
 //    Database db = await instance.database;
@@ -220,11 +241,11 @@ class DBService {
 //    currTempQBanks = fqb;
 //  }
 //
-//  // INSERT
-//  Future<int> insert(Map<String, dynamic> row) async {
-//    Database db = await instance.database;
-//    return await db.insert(_tableNameQuestionBank, row);
-//  }
+  // INSERT
+  Future<int> insert(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(_tableNameQuestionBank, row);
+  }
 //
 //  // UPDATE --
 //  void updateSelectedAnswer(int qSet, int qID, int newValue) async {

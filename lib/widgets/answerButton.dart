@@ -6,11 +6,11 @@ import 'package:friendstrivia/resources/constances.dart';
 
 class AnswerButton extends StatelessWidget {
   Color color;
-  String questionOrder;
+  String label;
   String text;
   Icon trailingIcon;
   Function onPressed;
-  AnswerButton({this.color, this.questionOrder, this.text, this.trailingIcon, this.onPressed});
+  AnswerButton({this.color, this.label, this.text, this.trailingIcon, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class AnswerButton extends StatelessWidget {
           duration: 500,
           curve: Curves.linear,
           child: Container(
-            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 1.0),
+            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 1.0),
             decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.all(Radius.circular(16.0)),

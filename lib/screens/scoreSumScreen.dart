@@ -3,9 +3,9 @@ import 'package:friendstrivia/resources/constances.dart';
 
 // Your Score: xxxx
 // Best: xxxx
-
+//
 // ICON of ticket: 20
-
+//
 // Play Again button
 // Share button - to Facebook ???
 // Main Menu button
@@ -61,7 +61,13 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                           child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
                           color: kColorThemeGreen,
                           onPressed: () {
-                            // Navigator.pushNamed(context, '/mainmenu');
+                            try {
+                              int count = 0;
+                              Navigator.of(context).popUntil((_) => count++ >= 2);
+                              Navigator.pushNamed(context, '/questions'); // TODO: GO TO QUESTION FOR NOW
+                            } catch (ex){
+                              print('Exception: $ex');
+                            }
                           },
                         ),
 
@@ -77,7 +83,12 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                           child: Text(' Go Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
                           color: kColorThemeGreen,
                           onPressed: () {
-                            Navigator.pushNamed(context, '/mainmenu');
+                            try {
+                              int count = 0;
+                              Navigator.of(context).popUntil((_) => count++ >= 2);
+                            } catch (ex){
+                              print('Exception: $ex');
+                            }
                           },
                         ),
 

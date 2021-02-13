@@ -13,8 +13,13 @@ const kColorThemeTeal =  Color(0xff1CBFA3);
 const kColorWhite = Colors.white70;
 const kColorBlack = Colors.black87;
 const kColorPureBlack = Colors.black;
-
 const kColorPureWhite = Colors.white;
+
+const kColorYellow = Colors.yellowAccent;
+const kColorRed = Colors.redAccent;
+
+const kCorrectColor = Colors.lightGreenAccent;
+const kIncorrectColor = Colors.pinkAccent;
 
 //--> F O N T S
 const kDefaultFont = 'TitilliumWeb';
@@ -24,13 +29,19 @@ const kGabrielWFont = 'GabrielW';
 const kDefaultTS = TextStyle(fontFamily: kDefaultFont);
 
 //--> I C O N S
-const Icon kCorrectIcon = Icon(Icons.check, color: Colors.white,);
+const Icon kCorrectIcon = Icon(Icons.check, color: Colors.black87,);
 const Icon kIncorrectIcon = Icon(Icons.clear, color: Colors.white,);
 const Icon kGoIcon = Icon(Icons.forward, color: Colors.white,);
 const Icon kHomeIcon = Icon(Icons.home, color: Colors.white,);
 
 // --> Constants
-const int kTotalQuestionNum = 5;
+const int kNumberOfQuestionsPerSet = 10;
+const String kSection1Name = "In TV Series Trivia";
+const String kSection2Name = "\'Who said this?\' Trivia";
+
+// TODO To be used!
+const List<String> kSectionNames = [kSection1Name, kSection2Name];
+const int kTimeSecPerQuestion = 30;
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(
@@ -52,16 +63,6 @@ Widget kFriendsBanner = Container(
                                                        fontFamily: kGabrielWFont, fontSize: 30.0,
                                                        fontStyle: FontStyle.normal),),),
                         );
-
-
-//--> Dummy Data
-
-const List<String> kQuestionText = ['Who says \'How you doing?\'','Who is the oldest one?','question1','question1','question1'];
-const List<String> kAns1Text = ['Ross','Phoebe','Answer1','Answer1','Answer1'];
-const List<String> kAns2Text = ['Rachel','Monica','Answer2','Answer2','Answer2'];
-const List<String> kAns3Text = ['Joey','Chandler','Answer3','Answer3','Answer3'];
-const List<String> kAns4Text = ['Nobody!','Gunther','Answer4','Answer4','Answer4'];
-const List<int> kCorrectAns = [0,1,2,3,0];
 
 // -------------------
 

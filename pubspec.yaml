@@ -1,20 +1,6 @@
 name: friendstrivia
-description: A new Flutter application.
-
-# The following line prevents the package from being accidentally published to
-# pub.dev using `pub publish`. This is preferred for private packages.
+description: Friends Trivia - Quiz Game
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
 
 environment:
@@ -28,9 +14,11 @@ dependencies:
   path_provider: ^1.6.7
   csv: ^4.0.3
   cupertino_icons: ^1.0.0
+  progress_indicators: ^0.1.5
+  circular_countdown: ^1.2.1
 
-# TODO: counter timer: https://pub.dev/packages/flutter_countdown_timer/install 
-  flutter_countdown_timer: ^3.0.0
+# TODO: Social_Share: https://fluttergems.dev/sharing-intent/
+
 
 dev_dependencies:
   flutter_test:
@@ -51,5 +39,3 @@ flutter:
     - family: GabrielW
       fonts:
         - asset: assets/fonts/GabrielW/GabrielW.ttf
-
-

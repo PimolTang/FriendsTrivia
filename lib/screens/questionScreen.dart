@@ -1,8 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import  'package:circular_countdown/circular_countdown.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/answerButton.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:progress_indicators/progress_indicators.dart';
+// import 'package:vector_math/vector_math_64.dart';
+import '../models/dbService.dart';
+import '../resources/constances.dart';
+
 
 class QuestionScreen extends StatefulWidget {
   int secID, pageID;
@@ -15,16 +20,30 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProviderStateMixin {
-  _QuestionScreenState({@required this.secID, @required this.pageID, @required this.onNextQuestion});
   int secID, pageID, secQuestionID;
-  Function(int, int) onNextQuestion;
-  bool _previouslyAnswered;
-  bool _hasAnswered = false;
+  Function(int,int) onNextQuestion;
+  _QuestionScreenState({@required this.secID, @required this.pageID, @required this.onNextQuestion});
+
+  bool _alreadyAnswered = false;
+  Text correctOrIncorrect = Text('');
+  int _timeSec = 30;
+  bool _timeStoppedFlag = false;
+
   int _selectedAnswer = 0;
+  bool _previouslyAnswered;
 
-  double _answersHeight = 400.0; //TODO: need to be calculated.
+  List<Icon> _lstAnsIcons = [null,null,null,null];
+  List<Color> _lstAnsColor = [null,null,null,null];
 
-//  List<Icon> _lstAnsIcons= [null,null,null];
+//    var _pd = MediaQuery.of(context).padding;
+//    double _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
+//    _answersHeight = _answersHeight - kMainHeaderHeight - kNoBannerHeightForNow - 150.0;
+      double _answersHeight = 440.0; //TODO: need to be calculated.
+//
+//    secQuestionID = DBService.currQBanks[pageID].secQuestionID;
+//    _previouslyAnswered = (DBService.currQBanks[pageID].selectedAnswer != 0) ? true: false;
+//
+// =========================
 //
 //  // 'globalKey' to be used in Scaffold's key for SnackBar
 //  final _globalKey = GlobalKey<ScaffoldState>();
@@ -34,6 +53,10 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+
+    _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
+    _lstAnsIcons.fillRange(0, 4, null); //Icon(Icons.check, color: kColorThemeTeal,));
+
     // Image animation
 //    _animationController = new AnimationController(vsync: this, duration: Duration(microseconds: 100));
 //    _animation = Tween(begin: 1.0, end: 1.8).animate((CurvedAnimation(parent: _animationController,curve: Curves.easeInOut))..addListener(() {
@@ -43,197 +66,126 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea (
           child: Scaffold(
           backgroundColor: kColorThemeLightPurple,// kColorGrey,
           appBar: AppBar(
               leading: GestureDetector(
-
-                  child:
-                Row(children: <Widget>[ //Icon(Icons.reply, color: kColorWhite),
-                                       SizedBox(child: Icon(Icons.settings, color: kColorBlack,),
-                                                width: 50.0),
-                                      ])
-                  ,onTap: () {
-
-                     pauseAlertDialog(context);
-
-                   // Navigator.of(context).pop();
-
-                  }
-
-                  ),
-
-
+                        child: Row(children: <Widget>[ //Icon(Icons.reply, color: kColorWhite),
+                                                        SizedBox(child: Icon(Icons.settings, color: kColorBlack,),
+                                                                 width: 50.0),
+                                                      ])
+                        , onTap: () { pauseAlertDialog(context);  }
+                        ),
               iconTheme: IconThemeData(color: kColorThemeGreen),
               backgroundColor: kColorThemeTeal,
               title: Column (
                 mainAxisAlignment: MainAxisAlignment.center, // .start,
                 children:
                 <Widget>[
-                  Text('In Movie Trivia', style: kDefaultTS), //, style: kDefaultBlackTextStyle),
+                  Text(kSection1Name, style: kDefaultTS), //, style: kDefaultBlackTextStyle),
                 ],
               )),
+
             //--> SECTION: BODY
             body: Column( children: <Widget>[
                     // Header in Body
                     Padding ( padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         crossAxisAlignment: CrossAxisAlignment.center,
                          children: <Widget>[
+                                  Row(children: <Widget>[
+                                    Icon(Icons.favorite, size: 22, color: kColorThemeRed,),
+                                    Text(' 200',
+                                      style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],),
 
-                                Row(children: <Widget>[
-                                  Icon(Icons.favorite, size: 22, color: kColorThemeRed,),
-                                  Text(' 200',
-                                    style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
+                                  Row (children: <Widget> [ // Icon(Icons.timer, color: kColorPureBlack,),
+                                                            SizedBox (
+                                                              width: 28.0,
+                                                              height: 28.0,
+                                                              child: TimeCircularCountdown(
+                                                                unit: CountdownUnit.second,
+                                                                countdownTotal: kTimeSecPerQuestion,
+                                                                onUpdated: (unit, remainingTime) {
+                                                                              // _timeStoppedFlag is to stop time when already answered!
+                                                                              if (_timeStoppedFlag == false) {
+                                                                                  setState(() {
+                                                                                    _timeSec = remainingTime;
+                                                                                  });
+                                                                              }
+                                                                            },
+                                                                onFinished: () {
+                                                                  setState(() {
+                                                                     _timeSec = 0;
+                                                                     onNextQuestion(pageID, 1);
+                                                                  });
+                                                                },
+                                                                onCanceled: null,
+                                                                countdownRemainingColor: (_timeSec < 6) ? kColorRed : kColorYellow
+
+                                                              ),
+                                                            ),
+
+                                                           Text(' $_timeSec', style: TextStyle(fontSize: 20.0, fontFamily: kDefaultFont,
+                                                                              color: (_timeSec < 6) ? kColorThemeRed : kColorWhite,
+                                                                              fontWeight: FontWeight.w600),)]
                                   ),
-                                ],),
 
-                                 Row (
-                                   children: <Widget> [Icon(Icons.timer, color: kColorPureBlack,),
-                                                       // TODO: If less than 5, Text Color changed to 'kColorThemeRed'
-                                                       Text(' 155', style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),)]
-                                 ),
-
-                                 Text('${pageID+1}/$kTotalQuestionNum', style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),), ],
+                                 Text('${pageID+1}/$kNumberOfQuestionsPerSet', style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),), ],
 
                       ),
                     ),
 
-                    // Question in Body
-                    SizedBox(height: 30.0,),
-                    Text(kQuestionText[pageID], style: TextStyle(fontSize: 30.0, color: kColorPureWhite, fontFamily: kDefaultFont,),),
-                    SizedBox(height: 20.0),
-                    SizedBox (
+                    //--> Question in Body
+                    Container (
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(horizontal: 14.0,vertical: 18.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[Flexible(child: Text('${DBService.currQBanks[pageID].question}',
+                                                             style: TextStyle(fontSize: 26.0, color: kColorPureWhite, fontFamily: kDefaultFont,)),
+                          )]),
+                    ),
+
+                    //--> Answers in Body
+                    SizedBox(
                       height: _answersHeight,
                       child: SingleChildScrollView(
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         scrollDirection: Axis.vertical,
                         child: Column(
                           children: <Widget>[
-                            AnswerButton(color: kColorThemeTeal, questionOrder: "A", text: kAns1Text[pageID],
-                              trailingIcon: kIncorrectIcon, onPressed: null,),
-                            AnswerButton(color: kColorThemeTeal, questionOrder: "B", text: kAns2Text[pageID],
-                              trailingIcon: kCorrectIcon, onPressed: null,),
-                            AnswerButton(color: kColorThemeTeal, questionOrder: "C", text: kAns3Text[pageID],
-                              trailingIcon: kCorrectIcon, onPressed: null,),
-                            AnswerButton(color: kColorThemeTeal, questionOrder: "D", text: kAns4Text[pageID],
-                              trailingIcon: kCorrectIcon, onPressed: null,),
+                            AnswerButton(color: _lstAnsColor[0], label: "A", text: '${DBService.currQBanks[pageID].answer1}',
+                              trailingIcon: _lstAnsIcons[0], onPressed: () { _answerEntered(context, 0); },),
+                            AnswerButton(color: _lstAnsColor[1], label: "B", text: '${DBService.currQBanks[pageID].answer2}',
+                              trailingIcon: _lstAnsIcons[1], onPressed: () { _answerEntered(context, 1); },),
+                            AnswerButton(color: _lstAnsColor[2], label: "C", text: '${DBService.currQBanks[pageID].answer3}',
+                              trailingIcon: _lstAnsIcons[2], onPressed: () { _answerEntered(context, 2); },),
+                            AnswerButton(color: _lstAnsColor[3], label: "D", text: '${DBService.currQBanks[pageID].answer4}',
+                              trailingIcon: _lstAnsIcons[3], onPressed: () { _answerEntered(context, 3); },),
+                            SizedBox(height: 12.0,),
+                            Visibility (
+                              visible: _alreadyAnswered,
+                              child: HeartbeatProgressIndicator(
+                                startScale: 0.8, endScale: 2.2,
+                                duration: Duration(seconds: 1),
+                                child: correctOrIncorrect,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-
-
-
             ],
 
             )
 
-
-
       ),
         );
 
-    // TEMP:
-
-
-
-
-//    var _pd = MediaQuery.of(context).padding;
-//    double _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
-//    _answersHeight = _answersHeight - kMainHeaderHeight - kNoBannerHeightForNow - 150.0;
-//
-//    secQuestionID = DBService.currQBanks[pageID].secQuestionID;
-//    _previouslyAnswered = (DBService.currQBanks[pageID].selectedAnswer != 0) ? true: false;
-//
-//    return Scaffold(
-//      key: _globalKey,
-//      backgroundColor: kThemeColorGrey,// kColorGrey,
-//      appBar: AppBar(
-//          leading: GestureDetector(child: Row(children: <Widget>[Icon(Icons.reply, color: kStudySectionColor),
-//            Icon(Icons.home, color: kStudySectionColor,)])
-//              ,onTap: () { Navigator.of(context).pop(); }),
-//          iconTheme: IconThemeData(color: kColorDarkGreen),
-//          backgroundColor: kColorGrey,
-//          title: Row(
-//            mainAxisAlignment: MainAxisAlignment.start,
-//            children:
-//            <Widget>[
-//              Text('${kSectionText[secID]}: #${pageID+1}/${DBService.currQBanks.length} ', style: kDefaultBlackTextStyle),
-//            ],
-//          )),
-//      body:
-//
-//      // *** TOP LEVEL COLUMN; containing Header, Body,  ***
-//      Column(
-//          mainAxisAlignment: MainAxisAlignment.start,
-//          crossAxisAlignment: CrossAxisAlignment.stretch,
-//          children: <Widget>[
-//
-//            // ** Header **
-//            Container(
-//              child:
-//              Center(child:
-//              Padding (
-//                padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
-//                child:
-//                Column (
-//                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                    children: <Widget>[
-//                      Text('${DBService.currQBanks[pageID].question}',
-//                        style: kQuestionTextStyle.copyWith(fontWeight: bigFontIfNoImage(pageID) ),),
-//                      getImage(pageID),
-//                    ]
-//                ),
-//              ),
-//              ),
-//              height: kMainHeaderHeight,
-//              decoration: BoxDecoration(
-//                color: kStudySectionColor,
-//                boxShadow: [BoxShadow(blurRadius: 6.0)],
-//                borderRadius: BorderRadius.vertical(
-//                    bottom: Radius.elliptical(MediaQuery.of(context).size.width, 12.0)),
-//              ),
-//            ),
-//
-//            SizedBox(height: 10.0),
-//
-//            // ** Body **
-//            // (1) Sized this Box/Area with 'a set height' and put a child with
-//            // (2) 'Scrollview' of scrollDirection of vertical and put child with
-//            // (3) Column of AnswerButtons
-//            SizedBox (
-//              height: _answersHeight,
-//              child: SingleChildScrollView (
-//                padding: EdgeInsets.symmetric(horizontal: 16.0),
-//                scrollDirection: Axis.vertical,
-//                child: Column (
-//                  crossAxisAlignment: CrossAxisAlignment.stretch,
-//                  // mainAxisSize: MainAxisSize.max,
-//                  children: <Widget>[
-//                    AnswerButton(questionOrder: "A",
-//                        text: '${DBService.currQBanks[pageID].answer1}', //, '${DBService.currQBanks[secID].answer1}',
-//                        color: getColorforAnswer(1),
-//                        trailingIcon: _lstAnsIcons[0],
-//                        onPressed: () { _answerEntered(context, 1); }),
-//                    AnswerButton(questionOrder: "B",
-//                        text: '${DBService.currQBanks[pageID].answer2}',
-//                        color: getColorforAnswer(2),
-//                        trailingIcon: _lstAnsIcons[1],
-//                        onPressed: () { _answerEntered(context, 2); }),
-//                    AnswerButton(questionOrder: "C",
-//                        text: '${DBService.currQBanks[pageID].answer3}',
-//                        color: getColorforAnswer(3),
-//                        trailingIcon: _lstAnsIcons[2],
-//                        onPressed: () { _answerEntered(context, 3); }),
-//                  ],
-//                ),
-//              ),
-//            ),
-//          ]
-//      ),
-//
 //      // *** END TOP LEVEL COLUMN ***
 //
 //      bottomNavigationBar: SizedBox(height: kNoBannerHeightForNow,), // Dummy area for Admob
@@ -371,9 +323,55 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 //    _animationController.dispose();
 //  }
 
+// -------------------------------
+// Functions in Stateful Widgets!
+// -------------------------------
+
+  void _answerEntered(BuildContext context, int selAns) async {
+    if (!_alreadyAnswered) {
+      _alreadyAnswered = true;
+      int correctAns = DBService.currQBanks[pageID].correctAnswer;
+
+      print("Correct Answer is: $correctAns");
+      print("Selected Answer Answer is: $selAns");
+
+      _lstAnsIcons.fillRange(0, 4, null);
+      _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
+      _selectedAnswer = selAns + 1; // Then it will trigger 'Answer Button's BackgroundColor' as well
+
+      // Case: C O R R E C T
+      if (DBService.currQBanks[pageID].correctAnswer == selAns) {
+        setState(() {
+          _timeStoppedFlag = true;
+          _lstAnsIcons[selAns] = kCorrectIcon;
+          _lstAnsColor[selAns] = kCorrectColor;
+          correctOrIncorrect = Text(' Correct! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorPureWhite),);
+        });
+      } else {
+        // Case: I N C O R R E C T (need to set Correct one and the Selected one)
+        setState(() {
+          _timeStoppedFlag = true;
+          _lstAnsIcons[correctAns] = kCorrectIcon;
+          _lstAnsColor[correctAns] = kCorrectColor;
+          _lstAnsIcons[selAns] = kIncorrectIcon;
+          _lstAnsColor[selAns] = kIncorrectColor;
+          correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorThemeRed),);
+        });
+      }
+
+      // Save Answer into Database ('testSelectedAnswer')
+      //    await DBService.instance.updateTestsSelectedAnswer(
+      //          testID, testQuestionID, _testSelectedAnswer);
+
+      // Goto the next question
+      onNextQuestion(pageID, 2000);
+    }
+  }
 }
 
-// TEMP:
+// -----------------------
+// Independence Functions!
+// -----------------------
 
 void pauseAlertDialog(BuildContext context) {
   // set up the buttons
