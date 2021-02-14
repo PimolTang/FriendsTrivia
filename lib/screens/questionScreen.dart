@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import  'package:circular_countdown/circular_countdown.dart';
+import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/answerButton.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 // import 'package:vector_math/vector_math_64.dart';
 import '../models/dbService.dart';
 import '../resources/constances.dart';
-
 
 class QuestionScreen extends StatefulWidget {
   int secID, pageID;
@@ -121,12 +121,16 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                                                 onFinished: () {
                                                                   setState(() {
                                                                      _timeSec = 0;
-                                                                     onNextQuestion(pageID, 1);
+                                                                     // Show Answer Questions; Color and Icon
+                                                                     // TODO: TO CHECK -- How to brink Answer button.
+                                                                     _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
+
+                                                                     // Go to Next Question
+                                                                     onNextQuestion(pageID, 5000);
                                                                   });
                                                                 },
                                                                 onCanceled: null,
                                                                 countdownRemainingColor: (_timeSec < 6) ? kColorRed : kColorYellow
-
                                                               ),
                                                             ),
 
@@ -141,12 +145,14 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                     ),
 
                     //--> Question in Body
+                    // TODO: BUG HERE, WHEN QUESTION TEXT IS TOO LONG, IT will push Answer box out of the screen!!
                     Container (
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 14.0,vertical: 18.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[Flexible(child: Text('${DBService.currQBanks[pageID].question}',
-                                                             style: TextStyle(fontSize: 26.0, color: kColorPureWhite, fontFamily: kDefaultFont,)),
+                          children: <Widget>[Flexible(child: Text(getQuestionText(pageID),
+                                                             style: TextStyle(fontSize: 24.0,
+                                                                    color: kColorPureWhite, fontFamily: kDefaultFont,)),
                           )]),
                     ),
 
@@ -158,13 +164,13 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                         scrollDirection: Axis.vertical,
                         child: Column(
                           children: <Widget>[
-                            AnswerButton(color: _lstAnsColor[0], label: "A", text: '${DBService.currQBanks[pageID].answer1}',
+                            AnswerButton(color: _lstAnsColor[0], label: "A", text: getAnswer1Text(pageID),
                               trailingIcon: _lstAnsIcons[0], onPressed: () { _answerEntered(context, 0); },),
-                            AnswerButton(color: _lstAnsColor[1], label: "B", text: '${DBService.currQBanks[pageID].answer2}',
+                            AnswerButton(color: _lstAnsColor[1], label: "B", text: getAnswer2Text(pageID),
                               trailingIcon: _lstAnsIcons[1], onPressed: () { _answerEntered(context, 1); },),
-                            AnswerButton(color: _lstAnsColor[2], label: "C", text: '${DBService.currQBanks[pageID].answer3}',
+                            AnswerButton(color: _lstAnsColor[2], label: "C", text: getAnswer3Text(pageID),
                               trailingIcon: _lstAnsIcons[2], onPressed: () { _answerEntered(context, 2); },),
-                            AnswerButton(color: _lstAnsColor[3], label: "D", text: '${DBService.currQBanks[pageID].answer4}',
+                            AnswerButton(color: _lstAnsColor[3], label: "D", text: getAnswer4Text(pageID),
                               trailingIcon: _lstAnsIcons[3], onPressed: () { _answerEntered(context, 3); },),
                             SizedBox(height: 12.0,),
                             Visibility (
@@ -206,47 +212,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   // -------------------
   //  F U N C T I O N S
   // -------------------
-//  void _toggleBookmark (int sID, int sQuestID) {
-//    DBService.instance.updateBookmark(sID, sQuestID, (widget.bookmarked) ? 0 : 1);
-//    setState(() {
-//      widget.bookmarked = !widget.bookmarked;
-//    });
-//  }
-//
-//  Color getColorforAnswer(int i) {
-//    // LOGIC:
-//    // 1.1 If 'previouslyAnswer' = true and this answer is correct --> Green
-//    // 1.2 If 'previouslyAnswer' = true and this Answer Selected and this answer incorrect --> Red
-//    // 1.3 If 'previouslyAnswer' = true and this Answer NOT Selected --> White
-//    // 2.0 If 'previouslyAnswer' = false --> Go with normal flow.
-//
-//    if (_previouslyAnswered) {
-//      if (_isAnsCorrect(i)) {
-//        // 1.1 previously answered mode and CORRECT
-//        _lstAnsIcons[i-1] = kCorrectIcon;
-//        return kColorGreen; // kColorLightGreen;
-//      } else {
-//        if (DBService.currQBanks[pageID].selectedAnswer == i) {
-//          // 1.2: previously answered mode and NOT Correct.
-//          _lstAnsIcons[i - 1] = kIncorrectIcon;
-//          // _boolNextQuesBtnVisibility = true;
-//          return kColorLightRed; // 'the incorrect answer' got selected.
-//        } else {
-//          // 1.3: previously answered mode and NOT EVEN SELECTED.
-//          // _lstAnsIcons[i-1] = kCorrectIcon;  // TO CHANGE to nothing ICON
-//          return kColorWhite;
-//        }
-//      }
-//
-//    } else {
-//      // 2
-//      return ((_hasAnswered)
-//          ? (_answerCorrectAndSelectedOrNot(i))
-//          : kColorWhite);
-//    }
-//
-//  }
-//
+
 //  // NOTE: This method will be triggered when 'hasAnswered' parameter has changed.
 //  Color _answerCorrectAndSelectedOrNot(int i) {
 //    // Case: When 'the correct answer', ('selected' or 'not') --> give Green to that button
@@ -326,6 +292,11 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 // -------------------------------
 // Functions in Stateful Widgets!
 // -------------------------------
+  String getQuestionText(int pID) =>(DBService.currQBanks != null) ? DBService.currQBanks[pID].question : '';
+  String getAnswer1Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer1 : '';
+  String getAnswer2Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer2 : '';
+  String getAnswer3Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer3 : '';
+  String getAnswer4Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer4 : '';
 
   void _answerEntered(BuildContext context, int selAns) async {
     if (!_alreadyAnswered) {
@@ -334,7 +305,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
       print("Correct Answer is: $correctAns");
       print("Selected Answer Answer is: $selAns");
-
       _lstAnsIcons.fillRange(0, 4, null);
       _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
       _selectedAnswer = selAns + 1; // Then it will trigger 'Answer Button's BackgroundColor' as well
@@ -355,16 +325,17 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
           _lstAnsColor[correctAns] = kCorrectColor;
           _lstAnsIcons[selAns] = kIncorrectIcon;
           _lstAnsColor[selAns] = kIncorrectColor;
-          correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorThemeRed),);
+          correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorRed),);
         });
       }
 
-      // Save Answer into Database ('testSelectedAnswer')
-      //    await DBService.instance.updateTestsSelectedAnswer(
-      //          testID, testQuestionID, _testSelectedAnswer);
+      // Set 'gotSelected' into Database for that 'SectionID' and 'QuestionID'
+      await DBService.instance.updateGotSelected(DBService.currSectionID, DBService.currQBanks[pageID].questionID, 1);
+
+      await DBService.instance.getQuestionNumberLeft(1);
 
       // Goto the next question
-      onNextQuestion(pageID, 2000);
+      onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
     }
   }
 }
@@ -372,7 +343,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 // -----------------------
 // Independence Functions!
 // -----------------------
-
 void pauseAlertDialog(BuildContext context) {
   // set up the buttons
   Widget cancelButton = FlatButton(

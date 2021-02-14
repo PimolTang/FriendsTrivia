@@ -11,16 +11,17 @@ class DBService {
   static final _dbName = 'ft.db';
   static final _dbVersion = 1;
   static final _tableNameQuestionBank = 'QuestionBank';
-  // static final _tableNameScore = 'Score';
+  static final _tableNameScore = 'Score';
   //static final _tableNameStatus = 'Status';
+  //static int currID, currScore;
 
-  static int currID, currScore;
+  static int currSectionID;
   static List<QuestionBank> currQBanks;
 
-//  static List<QuestionBank> currTempQBanks;
+// static List<QuestionBank> currTempQBanks;
 // static int currAusValueScore, nextUnansweredAusValueQuestion = -1;
 
-//  // Making it a singleton class (create an instance)
+// Making it a singleton class (create an instance)
   DBService._privateConstructor();
   static final DBService instance = DBService._privateConstructor();
 
@@ -29,7 +30,7 @@ class DBService {
 
   // Variable of 'database' with get function!
   Future<Database> get database async {
-    if (_database != null ) { return _database; }
+    if (_database != null) { return _database; }
     _database = await _initiateDB();
     return _database;
   }
@@ -37,7 +38,7 @@ class DBService {
   // 'Initial DB' with linked 'OnCreate' function
   _initiateDB() async {
     Directory dir = await getApplicationDocumentsDirectory();
-    String path = join(dir.path, _dbName); // print ('PATH + DBNAME = $path');
+    String path = join(dir.path, _dbName);
     return await openDatabase(path, version: _dbVersion, onCreate: _onCreate);
   }
 
@@ -61,15 +62,17 @@ class DBService {
                );
           ''');
 
-//      await db.execute(
-//          '''
-//               CREATE TABLE $_tableNameScore (
-//               questionSet INTEGER NOT NULL PRIMARY KEY,
-//               score INTEGER,
-//               ausValueScore INTEGER,
-//               dateTime TEXT
-//               );
-//          ''');
+      await db.execute(
+          '''
+               CREATE TABLE $_tableNameScore (               
+               score INTEGER NOT NULL PRIMARY KEY               
+               );
+          ''');
+      // questionSet INTEGER NOT NULL PRIMARY KEY,
+      // dateTime TEXT ??
+
+        await db.execute('INSERT INTO $_tableNameScore (score) VALUES (0);');
+
 //
 //      await db.execute(
 //          '''
@@ -98,14 +101,19 @@ class DBService {
     return q.length;
   }
 
-  void refreshQuestionBankRandomly (int secID) async {
-    // selectedAnswer	isCorrect	correctAnswer	isBookmarked
+  // Refresh Questions Bank according to SectionID
+  Future<int> refreshQuestionBankRandomly (int secID) async {
+
+    // CHECK FIRST: if Questions left is less than 10 questions;
+
+    if(await DBService.instance.getQuestionNumberLeft(secID) < 10 ) {
+      await resetGotSelected(secID);
+    }
+
     String baseStmt = "SELECT * FROM $_tableNameQuestionBank where sectionID = $secID " +
                       "and gotSelected = 0 order by RANDOM() LIMIT $kNumberOfQuestionsPerSet";
-
     Database db  = await instance.database;
-    String readyStmt = baseStmt; // and ($unansweredFlagClause $correctFlagClause $incorrectFlagClause $bookmarkedFlagClause)';
-    List<Map> rs = await db.rawQuery(readyStmt);
+    List<Map> rs = await db.rawQuery(baseStmt);
 
     List<QuestionBank> qb = new List();
     for (int i = 0; i < rs.length; i++) {
@@ -116,8 +124,32 @@ class DBService {
       );
     }
     currQBanks = await qb;
+    return qb.length;
   }
 
+  // Set currSectionID
+  void setcurrSectionID(int secID) {
+    currSectionID = secID;
+  }
+
+  Future updateGotSelected( int secID, qID, newValue)  async {
+    Database db = await instance.database;
+    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET gotSelected=? where sectionID =? and questionID=? ',
+                        [newValue, secID, qID]);
+  }
+
+  Future<int> getQuestionNumberLeft (int secID) async {
+    String baseStmt = "SELECT * FROM $_tableNameQuestionBank where sectionID = $secID and gotSelected = 0";
+    Database db  = await instance.database;
+    List<Map> rs = await db.rawQuery(baseStmt);
+    print("QUESTIONS LEFT: ${rs.length}");
+    return rs.length;
+  }
+
+  void resetGotSelected(int secID) async {
+    Database db = await instance.database;
+    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET gotSelected=? where sectionID =?', [0, secID]);
+  }
 
 //
 //  Future<int> refreshCurrentScoreByQuestionSet(int qSet) async {
@@ -136,12 +168,8 @@ class DBService {
 //    return q.length;
 //  }
 //
-//  // ==========================================
-//  Future updateStatus(int currQSet, int currID ) async {
-//    Database db = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameStatus SET currQuestionSet = ?,  '
-//        'currID = ?', [currQSet, currID]);
-//  }
+  // ==========================================
+
 //
 //  Future<List<Map<String, dynamic>>> getQuestionSetFromStatusTable() async {
 //    Database db  = await instance.database;

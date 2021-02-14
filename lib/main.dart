@@ -17,11 +17,10 @@ class FriendsTriviaApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       color: kColorThemePurple,
       routes: {
-        '/': (context) => GetStartedScreen(),   // #1
+        '/': (context) => GetStartedScreen(),       // #1
         '/mainmenu': (context) => MainMenuScreen(), // #2
         '/questions': (context) => QuestionPageView(), // #3
-        '/scoresum' : (context) => ScoreSumScreen(),
-
+        '/scoresum' : (context) => ScoreSumScreen(), // #4
       },
       debugShowCheckedModeBanner: false,
     );

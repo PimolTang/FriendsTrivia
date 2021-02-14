@@ -35,7 +35,7 @@ class AnswerButton extends StatelessWidget {
 //                  child: Text(
 //                    questionOrder,
 //                  )),
-              title: Center (child: Text(text, style: TextStyle(fontFamily: kDefaultFont,))), //, style: kAnswerTextStyle,),
+              title: Center (child: Text(text, style: TextStyle(fontFamily: kDefaultFont, fontSize: 20.0))), //, style: kAnswerTextStyle,),
               trailing: trailingIcon,
             ),
           ),

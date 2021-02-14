@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:friendstrivia/models/argParameters.dart';
+import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
-
-// Your Score: xxxx
-// Best: xxxx
-//
-// ICON of ticket: 20
-//
-// Play Again button
-// Share button - to Facebook ???
-// Main Menu button
 
 class ScoreSumScreen extends StatefulWidget {
   @override
@@ -63,8 +56,10 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                           onPressed: () {
                             try {
                               int count = 0;
+                              // Go back to Main Menu
                               Navigator.of(context).popUntil((_) => count++ >= 2);
-                              Navigator.pushNamed(context, '/questions'); // TODO: GO TO QUESTION FOR NOW
+                              // Go to the same Section ID
+                              Navigator.pushNamed(context, '/questions', arguments: ArgParameters(DBService.currSectionID, 0));
                             } catch (ex){
                               print('Exception: $ex');
                             }

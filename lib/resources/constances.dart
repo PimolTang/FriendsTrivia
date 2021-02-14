@@ -21,6 +21,8 @@ const kColorRed = Colors.redAccent;
 const kCorrectColor = Colors.lightGreenAccent;
 const kIncorrectColor = Colors.pinkAccent;
 
+const kShowAnswerColor = Colors.yellowAccent;
+
 //--> F O N T S
 const kDefaultFont = 'TitilliumWeb';
 const kGabrielWFont = 'GabrielW';
@@ -31,17 +33,19 @@ const kDefaultTS = TextStyle(fontFamily: kDefaultFont);
 //--> I C O N S
 const Icon kCorrectIcon = Icon(Icons.check, color: Colors.black87,);
 const Icon kIncorrectIcon = Icon(Icons.clear, color: Colors.white,);
+
 const Icon kGoIcon = Icon(Icons.forward, color: Colors.white,);
 const Icon kHomeIcon = Icon(Icons.home, color: Colors.white,);
 
 // --> Constants
 const int kNumberOfQuestionsPerSet = 10;
+const int kTimeSecPerQuestion = 20;
+const int kDelayBetweenQuestionMilliSec = 3000; // 3000;
 const String kSection1Name = "In TV Series Trivia";
 const String kSection2Name = "\'Who said this?\' Trivia";
 
-// TODO To be used!
+// TODO: TO BE USED
 const List<String> kSectionNames = [kSection1Name, kSection2Name];
-const int kTimeSecPerQuestion = 30;
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(

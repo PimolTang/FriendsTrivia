@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:friendstrivia/models/argParameters.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/RoundedMenuButton.dart';
 import '../models/dbService.dart';
@@ -87,9 +88,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                 menuIcon: Icons.weekend_outlined,
                                 text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorPureWhite),),
                                 onPressed: () async {
-                                       // Load Questions
-                                        await DBService.instance.refreshQuestionBankRandomly(1);
-                                        Navigator.pushNamed(context, '/questions'); //, arguments: currStatus);
+                                        // Set SectionID = 1
+                                        await DBService.instance.setcurrSectionID(1);
+                                        Navigator.pushNamed(context, '/questions', arguments: ArgParameters(1,0));
                                       },
                                 ),
                             //--> Section 2.2:
@@ -97,9 +98,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                               menuIcon: Icons.camera,
                                 text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorPureWhite)),
                                 onPressed: () async {
-                                        // Load Questions
-                                        await DBService.instance.refreshQuestionBankRandomly(2);
-                                        Navigator.pushNamed(context, '/questions'); //, arguments: currStatus);
+                                        // Set SectionID = 2
+                                        await DBService.instance.setcurrSectionID(2);
+                                        Navigator.pushNamed(context, '/questions', arguments: ArgParameters(2,0)); //, arguments: currStatus);
                                       },
                             ),
                           ],

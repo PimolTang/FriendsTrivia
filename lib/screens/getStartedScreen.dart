@@ -65,8 +65,8 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                               ),
                 color: kColorThemeGreen,
                 onPressed: () {
-                   Navigator.pushNamed(context, '/mainmenu');
-                  },
+                     Navigator.pushNamed(context, '/mainmenu');
+                   },
                 ),
               )
 
