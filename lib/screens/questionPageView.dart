@@ -32,14 +32,11 @@ class _QuestionPageViewState extends State<QuestionPageView> {
           child: PageView.builder(
               controller: (_pageController = PageController(initialPage: 0)),
               scrollDirection: Axis.horizontal,
-              physics: AlwaysScrollableScrollPhysics(), // NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(), //AlwaysScrollableScrollPhysics(),
               itemCount: kNumberOfQuestionsPerSet,
               itemBuilder: (context, index) {
                 //Load Questions by SectionID
-                print('PICHAI: SECTION ID = ${DBService.currSectionID}');
-
                 loadQuestionsForSecID(DBService.currSectionID);
-
                 return QuestionScreen(secID: DBService.currSectionID,
                                       pageID: index,
                                       bookmarked: true,

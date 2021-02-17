@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import  'package:circular_countdown/circular_countdown.dart';
+import 'package:circular_countdown/circular_countdown.dart';
 import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/answerButton.dart';
@@ -28,6 +28,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   Text correctOrIncorrect = Text('');
   int _timeSec = 30;
   bool _timeStoppedFlag = false;
+  int pageScore;
+  int newAdditionalScore;
 
   int _selectedAnswer = 0;
   bool _previouslyAnswered;
@@ -57,6 +59,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
     _lstAnsIcons.fillRange(0, 4, null); //Icon(Icons.check, color: kColorThemeTeal,));
 
+    pageScore = DBService.instance.getCurrScore();
+
     // Image animation
 //    _animationController = new AnimationController(vsync: this, duration: Duration(microseconds: 100));
 //    _animation = Tween(begin: 1.0, end: 1.8).animate((CurvedAnimation(parent: _animationController,curve: Curves.easeInOut))..addListener(() {
@@ -66,6 +70,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    // DEBUG:
+    print('CORRECT ANSWER: Answer ${DBService.instance.getCorrectAnswer(pageID)+1} ');
 
     return SafeArea (
           child: Scaffold(
@@ -76,7 +82,12 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                                         SizedBox(child: Icon(Icons.settings, color: kColorBlack,),
                                                                  width: 50.0),
                                                       ])
-                        , onTap: () { pauseAlertDialog(context);  }
+                        , onTap: () {
+                          setState(() {
+                            _timeStoppedFlag = true;
+                          });
+                          pauseAlertDialog(context);
+                        }
                         ),
               iconTheme: IconThemeData(color: kColorThemeGreen),
               backgroundColor: kColorThemeTeal,
@@ -84,7 +95,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                 mainAxisAlignment: MainAxisAlignment.center, // .start,
                 children:
                 <Widget>[
-                  Text(kSection1Name, style: kDefaultTS), //, style: kDefaultBlackTextStyle),
+                  Text(kSectionNames[secID-1], style: kDefaultTS), //, style: kDefaultBlackTextStyle),
                 ],
               )),
 
@@ -97,9 +108,9 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                          crossAxisAlignment: CrossAxisAlignment.center,
                          children: <Widget>[
                                   Row(children: <Widget>[
-                                    Icon(Icons.favorite, size: 22, color: kColorThemeRed,),
-                                    Text(' 200',
-                                      style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
+                                    kFavoriteScoreIcon,
+                                    Text(' ${DBService.instance.getCurrScore()}',
+                                         style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
                                     ),
                                   ],),
 
@@ -108,30 +119,39 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                                               width: 28.0,
                                                               height: 28.0,
                                                               child: TimeCircularCountdown(
-                                                                unit: CountdownUnit.second,
-                                                                countdownTotal: kTimeSecPerQuestion,
-                                                                onUpdated: (unit, remainingTime) {
-                                                                              // _timeStoppedFlag is to stop time when already answered!
-                                                                              if (_timeStoppedFlag == false) {
-                                                                                  setState(() {
-                                                                                    _timeSec = remainingTime;
-                                                                                  });
-                                                                              }
-                                                                            },
-                                                                onFinished: () {
-                                                                  setState(() {
-                                                                     _timeSec = 0;
-                                                                     // Show Answer Questions; Color and Icon
-                                                                     // TODO: TO CHECK -- How to brink Answer button.
-                                                                     _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
+                                                                      unit: CountdownUnit.second,
+                                                                      countdownTotal: kTimeSecPerQuestion,
+                                                                      onUpdated: (unit, remainingTime) {
+                                                                                    // _timeStoppedFlag is to stop time when already answered!
+                                                                                    if (_timeStoppedFlag == false) {
+                                                                                        setState(() {
+                                                                                          _timeSec = remainingTime;
+                                                                                        });
+                                                                                    }
+                                                                                  },
+                                                                      onFinished: () {
+                                                                        setState(() {
+                                                                           _timeSec = 0;
+                                                                           // Show Answer Questions; Color and Icon
+                                                                           // TODO: TO CHECK -- How to brink Answer button.
+                                                                           _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
 
-                                                                     // Go to Next Question
-                                                                     onNextQuestion(pageID, 5000);
-                                                                  });
-                                                                },
-                                                                onCanceled: null,
-                                                                countdownRemainingColor: (_timeSec < 6) ? kColorRed : kColorYellow
-                                                              ),
+                                                                           // CASE: TIMEOUT:
+                                                                           // OPTION 1: --> GO TO scoresumscreen right away!
+                                                                           Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec), () {
+                                                                             Navigator.pushNamed(context, '/scoresum');
+                                                                           });
+
+                                                                          // ** OPTION 2: To go to next question (GOH: please uncomment below if you want to). **
+                                                                          // onNextQuestion(pageID, 5000);
+
+                                                                        });
+                                                                      },
+                                                                      onCanceled: (unit, point) {
+                                                                        // print('HERE IS onCanceled!:  $point');
+                                                                      },
+                                                                      countdownRemainingColor: (_timeSec < 6) ? kColorRed : kColorYellow
+                                                                    ),
                                                             ),
 
                                                            Text(' $_timeSec', style: TextStyle(fontSize: 20.0, fontFamily: kDefaultFont,
@@ -150,7 +170,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 14.0,vertical: 18.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[Flexible(child: Text(getQuestionText(pageID),
+                          children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
                                                              style: TextStyle(fontSize: 24.0,
                                                                     color: kColorPureWhite, fontFamily: kDefaultFont,)),
                           )]),
@@ -164,14 +184,22 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                         scrollDirection: Axis.vertical,
                         child: Column(
                           children: <Widget>[
-                            AnswerButton(color: _lstAnsColor[0], label: "A", text: getAnswer1Text(pageID),
-                              trailingIcon: _lstAnsIcons[0], onPressed: () { _answerEntered(context, 0); },),
-                            AnswerButton(color: _lstAnsColor[1], label: "B", text: getAnswer2Text(pageID),
-                              trailingIcon: _lstAnsIcons[1], onPressed: () { _answerEntered(context, 1); },),
-                            AnswerButton(color: _lstAnsColor[2], label: "C", text: getAnswer3Text(pageID),
-                              trailingIcon: _lstAnsIcons[2], onPressed: () { _answerEntered(context, 2); },),
-                            AnswerButton(color: _lstAnsColor[3], label: "D", text: getAnswer4Text(pageID),
-                              trailingIcon: _lstAnsIcons[3], onPressed: () { _answerEntered(context, 3); },),
+                            AnswerButton(color: _lstAnsColor[0], label: "A",
+                                         text: DBService.instance.getAnswer1Text(pageID),
+                                         trailingIcon: _lstAnsIcons[0],
+                                         onPressed: () { _answerEntered(context, 0); },),
+                            AnswerButton(color: _lstAnsColor[1], label: "B",
+                                         text: DBService.instance.getAnswer2Text(pageID),
+                                         trailingIcon: _lstAnsIcons[1],
+                                         onPressed: () { _answerEntered(context, 1); },),
+                            AnswerButton(color: _lstAnsColor[2], label: "C",
+                                         text: DBService.instance.getAnswer3Text(pageID),
+                                         trailingIcon: _lstAnsIcons[2],
+                                         onPressed: () { _answerEntered(context, 2); },),
+                            AnswerButton(color: _lstAnsColor[3], label: "D",
+                                         text: DBService.instance.getAnswer4Text(pageID),
+                                         trailingIcon: _lstAnsIcons[3],
+                                         onPressed: () { _answerEntered(context, 3); },),
                             SizedBox(height: 12.0,),
                             Visibility (
                               visible: _alreadyAnswered,
@@ -231,58 +259,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 //    }
 //  }
 //
-//  void _answerEntered(BuildContext context, int i) async {
-//    if ((_hasAnswered == false) && (_previouslyAnswered == false)) {
-//      setState(() {
-//        _previouslyAnswered = true;
-//        _hasAnswered = true;
-//        _selectedAnswer = i;
-//      });
-//      // case: the selected answer is CORRECT, then AutoNextQuestion is on
-//      if (_isAnsCorrect(_selectedAnswer)) {
-//        // Save Answer into Database ('isCorrect'); 1 is CORRECT; 0 is INCORRECT
-//        await DBService.instance.updateStudysIsCorrect(secID, secQuestionID, 1);
-//        // Show Snackbar to say 'it's correct!'
-//        _globalKey.currentState.showSnackBar(kSnackBarCorrectAnswer);
-//
-//        // Auto Next
-//        onNextQuestion(secID, secQuestionID);
-//        // -----------------------------------------------
-//      } else { // Case: the selected answer is INCORRECT!
-//        await DBService.instance.updateStudysIsCorrect(secID, secQuestionID, 0);
-//      }
-//      // Save Answer into Database ('selectedAnswer')
-//      await DBService.instance.updateStudysSelectedAnswer(secID, secQuestionID, _selectedAnswer);
-//    }
-//  }
-//
-//  bool _isAnsCorrect(int i) {
-//    return (DBService.currQBanks[pageID].correctAnswer == i) ? true : false;
-//  }
-//
-//  FontWeight bigFontIfNoImage(int pID) {
-//    return (DBService.currQBanks[pID].image != 'n') ? FontWeight.w600 : FontWeight.w800;
-//  }
-//
-//  Widget getImage(int pID) {
-//    if(DBService.currQBanks[pID].image != 'n') {
-//      return GestureDetector (
-//        onTap: () {
-//          if (_animationController.isCompleted) { _animationController.reverse(); }
-//          else { _animationController.forward(); }
-//        },
-//        child: Transform (
-//          alignment: Alignment.center,
-//          transform: Matrix4.diagonal3(Vector3(_animation.value, _animation.value, _animation.value)),
-//          child: Image.asset('assets/images/${DBService.currQBanks[pageID].image}',
-//              height: kMainHeaderHeight - 150,  // 275-150 = 125
-//              fit: BoxFit.fitHeight),
-//        ),
-//      );
-//    } else
-//      return SizedBox(height: 10.0,);
-//  }
-//
 //  @override
 //  void dispose() {
 //    super.dispose();
@@ -292,31 +268,39 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 // -------------------------------
 // Functions in Stateful Widgets!
 // -------------------------------
-  String getQuestionText(int pID) =>(DBService.currQBanks != null) ? DBService.currQBanks[pID].question : '';
-  String getAnswer1Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer1 : '';
-  String getAnswer2Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer2 : '';
-  String getAnswer3Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer3 : '';
-  String getAnswer4Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer4 : '';
-
   void _answerEntered(BuildContext context, int selAns) async {
     if (!_alreadyAnswered) {
       _alreadyAnswered = true;
       int correctAns = DBService.currQBanks[pageID].correctAnswer;
 
-      print("Correct Answer is: $correctAns");
-      print("Selected Answer Answer is: $selAns");
+      //print("Correct Answer is: $correctAns");
+      //print("Selected Answer Answer is: $selAns");
       _lstAnsIcons.fillRange(0, 4, null);
       _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
       _selectedAnswer = selAns + 1; // Then it will trigger 'Answer Button's BackgroundColor' as well
 
+      // Set 'gotSelected' flag into Database for that 'SectionID' and 'QuestionID'
+      await DBService.instance.updateGotSelected(DBService.currSectionID, DBService.currQBanks[pageID].questionID, 1);
+
       // Case: C O R R E C T
       if (DBService.currQBanks[pageID].correctAnswer == selAns) {
+        newAdditionalScore = 50;
+        print('DEBUG: TIME REMAINING = $_timeSec' );
+        newAdditionalScore = (_timeSec > 10) ? 200 + newAdditionalScore : ((_timeSec > 5) ? 100 + newAdditionalScore : 50 + newAdditionalScore);
+        print('DEBUG: ADDITIONAL SCORE: $newAdditionalScore');
+
+        await DBService.instance.setCurrScore(pageScore + newAdditionalScore);
+
         setState(() {
+          pageScore = DBService.instance.getCurrScore();
           _timeStoppedFlag = true;
           _lstAnsIcons[selAns] = kCorrectIcon;
           _lstAnsColor[selAns] = kCorrectColor;
-          correctOrIncorrect = Text(' Correct! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorPureWhite),);
+          correctOrIncorrect = Text(' Correct! +$newAdditionalScore', style: kDefaultTS.copyWith(fontSize: 18.0,color: kCorrectColor),);
         });
+        // CASE: CORRECT --> CONTINUE To the next question
+        // Goto the next question
+        onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
       } else {
         // Case: I N C O R R E C T (need to set Correct one and the Selected one)
         setState(() {
@@ -325,17 +309,18 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
           _lstAnsColor[correctAns] = kCorrectColor;
           _lstAnsIcons[selAns] = kIncorrectIcon;
           _lstAnsColor[selAns] = kIncorrectColor;
-          correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 18.0,color: kColorRed),);
+          correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 16.0,color: kColorRed),);
         });
+
+        // CASE: INCORRECT
+        // OPTION 1: --> GO TO scoresumscreen right away!
+        Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec), () {
+          Navigator.pushNamed(context, '/scoresum');
+        });
+
+        // ** OPTION 2: To go to next question (GOH: please uncomment below if you want to). **
+        // onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
       }
-
-      // Set 'gotSelected' into Database for that 'SectionID' and 'QuestionID'
-      await DBService.instance.updateGotSelected(DBService.currSectionID, DBService.currQBanks[pageID].questionID, 1);
-
-      await DBService.instance.getQuestionNumberLeft(1);
-
-      // Goto the next question
-      onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
     }
   }
 }

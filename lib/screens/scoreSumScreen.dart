@@ -9,8 +9,18 @@ class ScoreSumScreen extends StatefulWidget {
 }
 
 class _ScoreSumScreenState extends State<ScoreSumScreen> {
+  int baseScore;
+
   @override
   Widget build(BuildContext context) {
+    DBService.instance.updateBestScore(DBService.instance.getCurrScore());
+    DBService.instance.getBestScore().then((value) {
+      setState(() {
+        // Read the new 'value' from database, in case .updateBestScore(n) has changed the BestScore!
+        baseScore = value;
+      });
+    });
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
@@ -28,7 +38,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                 Text('You are the Biggest Fan!!', style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorPureWhite),),
                 //--> Line 3
                 Container(
-                  margin: EdgeInsets.all(10.0),
+                  margin: EdgeInsets.all(20.0),
                   height: 50,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -36,12 +46,18 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                     border: Border.all(color: kColorBlack, width: 3),
                     borderRadius: BorderRadius.all(Radius.circular(18)),
                   ),
-                  child: Center (child: Text('Score: 450', textAlign: TextAlign.center,
-                    style: TextStyle(color: kColorWhite, fontWeight: FontWeight.w800, fontSize: 16.0),)),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                             children: <Widget>[kFavoriteScoreIcon,
+                                                Text(' Score: ${DBService.instance.getCurrScore()}',
+                                                     textAlign: TextAlign.center,
+                                                     style: TextStyle(color: kColorWhite,
+                                                            fontWeight: FontWeight.w800,
+                                                            fontSize: 16.0),),
+                                               ])
                 ),
                 //--> Line 4:
 
-                Text('Best: 1200', style: kDefaultTS.copyWith(fontSize: 26.0, color: kColorPureWhite),),
+                Text('Best: $baseScore', style: kDefaultTS.copyWith(fontSize: 26.0, color: kColorPureWhite),),
 
                 //--> Line 5:
                 Container (
@@ -53,7 +69,9 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         RaisedButton (
                           child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
                           color: kColorThemeGreen,
-                          onPressed: () {
+                          onPressed: () async {
+                            // Reset CurrScore
+                            await DBService.instance.setCurrScore(0);
                             try {
                               int count = 0;
                               // Go back to Main Menu
@@ -77,7 +95,8 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         RaisedButton (
                           child: Text(' Go Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
                           color: kColorThemeGreen,
-                          onPressed: () {
+                          onPressed: () async {
+                            await DBService.instance.setCurrScore(0);
                             try {
                               int count = 0;
                               Navigator.of(context).popUntil((_) => count++ >= 2);

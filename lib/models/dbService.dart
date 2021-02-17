@@ -7,19 +7,14 @@ import 'questionBank.dart';
 import 'package:friendstrivia/resources/constances.dart';
 
 class DBService {
-  // Parameters for database and three tables;
+  // Parameters for database and two tables;
   static final _dbName = 'ft.db';
   static final _dbVersion = 1;
   static final _tableNameQuestionBank = 'QuestionBank';
   static final _tableNameScore = 'Score';
-  //static final _tableNameStatus = 'Status';
-  //static int currID, currScore;
 
-  static int currSectionID;
+  static int currSectionID, currScore = 0, currBestScore = 0; // NOT SURE IF we need 'currBestScore'???
   static List<QuestionBank> currQBanks;
-
-// static List<QuestionBank> currTempQBanks;
-// static int currAusValueScore, nextUnansweredAusValueQuestion = -1;
 
 // Making it a singleton class (create an instance)
   DBService._privateConstructor();
@@ -73,7 +68,6 @@ class DBService {
 
         await db.execute('INSERT INTO $_tableNameScore (score) VALUES (0);');
 
-//
 //      await db.execute(
 //          '''
 //               CREATE TABLE $_tableNameStatus (
@@ -103,10 +97,8 @@ class DBService {
 
   // Refresh Questions Bank according to SectionID
   Future<int> refreshQuestionBankRandomly (int secID) async {
-
     // CHECK FIRST: if Questions left is less than 10 questions;
-
-    if(await DBService.instance.getQuestionNumberLeft(secID) < 10 ) {
+    if(await DBService.instance.getQuestionNumberLeft(secID) < kNumberOfQuestionsPerSet ) {
       await resetGotSelected(secID);
     }
 
@@ -151,26 +143,45 @@ class DBService {
     await db.rawUpdate('UPDATE $_tableNameQuestionBank SET gotSelected=? where sectionID =?', [0, secID]);
   }
 
-//
-//  Future<int> refreshCurrentScoreByQuestionSet(int qSet) async {
-//    Database db = await instance.database;
-//    List<Map<String,dynamic>> q = await db.rawQuery('Select questionID from $_tableNameQuestionBank where questionSet = $qSet and isCorrect = 1');
-//    currScore = q.length;
-//    List<Map<String,dynamic>> avQ = await db.rawQuery('Select questionID from $_tableNameQuestionBank where questionSet=$qSet and isCorrect=1 and section=4');
-//    currAusValueScore = avQ.length;
-//    return q.length;
-//  }
-//
-//  Future<int> refreshCurrentScoreForAusValueSection() async {
-//    Database db = await instance.database;
-//    List<Map<String,dynamic>> q = await db.rawQuery('Select questionID from $_tableNameQuestionBank where inBonusSection = 1 and ausValueIsCorrect = 1');
-//    currAusValueScore = q.length;
-//    return q.length;
-//  }
-//
-  // ==========================================
+  String getQuestionText(int pID) =>(DBService.currQBanks != null) ? DBService.currQBanks[pID].question : '';
+  String getAnswer1Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer1 : '';
+  String getAnswer2Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer2 : '';
+  String getAnswer3Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer3 : '';
+  String getAnswer4Text(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].answer4 : '';
+  int getCorrectAnswer(int pID) => (DBService.currQBanks != null) ? DBService.currQBanks[pID].correctAnswer : 0;
 
-//
+  int getCurrScore() => (DBService.currScore != null) ? DBService.currScore : 0;
+  void setCurrScore(int newValue) {
+    if (DBService.currScore != null) DBService.currScore = newValue;
+  }
+
+  // TO DO
+  Future<int> getBestScore() async {
+    int retInt = 0;
+    // prepare DB
+    Database db  = await instance.database;
+    List<Map> _scoreRecords = await db.rawQuery('Select score from $_tableNameScore');
+    retInt = await _scoreRecords[0]["score"];
+    return retInt;
+  }
+
+  void updateBestScore(int newValue) async {
+    // prepare DB
+    Database db  = await instance.database;
+    // query baseScore
+    if(newValue > await getBestScore()) {
+       print('DEBUG: NewValue is more than BaseScore, attempting to change BaseScore');
+       // update BaseScore to the new value
+       await db.rawUpdate('UPDATE $_tableNameScore SET score = ?', [newValue]);
+       currBestScore = newValue;
+    }
+  }
+
+  void resetBestScore(int newValue) async {
+    Database db = await instance.database;
+    await db.rawUpdate('UPDATE $_tableNameScore SET score=?', [newValue]);
+  }
+
 //  Future<List<Map<String, dynamic>>> getQuestionSetFromStatusTable() async {
 //    Database db  = await instance.database;
 //    return await db.rawQuery('Select currQuestionSet, currID from $_tableNameStatus');
@@ -241,39 +252,13 @@ class DBService {
 //    }
 //    currTempQBanks = fqb;
 //  }
-//
-//  // ----------------------------------------------------
-//  // Load AusValue Question Data into QuestionBank Model
-//  // ----------------------------------------------------
-//  void refreshAusValueQuestionBank() async {
-//    Database db  = await instance.database;
-//    List<Map> recSet = await db.rawQuery('SELECT * FROM $_tableNameQuestionBank where inBonusSection=1');
-//    List<QuestionBank> fqb = new List();
-//    for (int i = 0; i < recSet.length; i++) {
-//      fqb.add(new QuestionBank(recSet[i]["questionSet"], recSet[i]["questionID"],
-//          recSet[i]["section"], recSet[i]["question"],
-//          recSet[i]["answer1"], recSet[i]["answer2"],
-//          recSet[i]["answer3"], recSet[i]["answer4"],
-//          recSet[i]["correctAnswer"], recSet[i]["AusValueSelectedAnswer"],
-//          recSet[i]["AusValueIsCorrect"], recSet[i]["skipReview"],
-//          recSet[i]["inBonusSection"], recSet[i]["ausValueSelectedAnswer"],
-//          recSet[i]["ausValueIsCorrect"])
-//      );
-//      // Update the 'nextUnansweredAusValueQuestion'
-//      if (nextUnansweredAusValueQuestion == -1) {
-//        if (recSet[i]["ausValueSelectedAnswer"] == 0) {
-//          nextUnansweredAusValueQuestion = i;
-//        }
-//      }
-//    }
-//    currTempQBanks = fqb;
-//  }
-//
-  // INSERT
-  Future<int> insert(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    return await db.insert(_tableNameQuestionBank, row);
-  }
+
+    // INSERT
+    Future<int> insert(Map<String, dynamic> row) async {
+      Database db = await instance.database;
+      return await db.insert(_tableNameQuestionBank, row);
+    }
+  //}
 //
 //  // UPDATE --
 //  void updateSelectedAnswer(int qSet, int qID, int newValue) async {
@@ -287,19 +272,7 @@ class DBService {
 //    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET isCorrect = ? '
 //        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
 //  }
-//
-//  // UPDATE -- To remove later
-//  void updateAusValueSelectedAnswer(int qSet, int qID, int newValue) async {
-//    Database db  = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET ausValueSelectedAnswer = ? '
-//        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
-//  }
-//  // UPDATE -- To remove later
-//  void updateAusValueIsCorrect(int qSet, int qID, int newValue) async {
-//    Database db  = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET ausValueIsCorrect = ? '
-//        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
-//  }
+
 //  // GET AusValueSelectedAnswer -- to remove later
 //  Future<int> getAusValueSelectedAnswer (int qSet, int qID) async {
 //    Database db  = await instance.database;

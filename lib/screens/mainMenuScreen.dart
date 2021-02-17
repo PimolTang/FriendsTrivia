@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:friendstrivia/models/argParameters.dart';
 import 'package:friendstrivia/resources/constances.dart';
@@ -11,8 +13,16 @@ class MainMenuScreen extends StatefulWidget {
 }
 
 class _MainMenuScreenState extends State<MainMenuScreen> {
+  int baseScore = 0;
   @override
   Widget build(BuildContext context) {
+
+    DBService.instance.getBestScore().then((value) {
+      setState(() {
+        baseScore = value;
+      });
+    });
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
@@ -38,9 +48,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                         color: kColorThemeGreen ,),
                       Container(alignment: Alignment.topLeft,
                         child: ListTile(leading: Icon(Icons.delete_forever),
-                          title: InkWell (child: Text('Reset Scores',style: kDefaultTS),
+                          title: InkWell (child: Text('Reset Your Best Score',style: kDefaultTS),
                               onTap: () {
-                                // resetPracticeAnswersAlertDialog(context);
+                                 resetBestScoreAlertDialog(context);
                               }                                                                                     ),),
                         color: kColorThemeTeal,),
 
@@ -72,7 +82,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
                 Row( mainAxisAlignment: MainAxisAlignment.center,
                      children: <Widget> [Icon(Icons.assistant_photo, color: Colors.orange, size: 30.0,),
-                                         Text (' Best: 200', style: TextStyle(color: kColorPureWhite,
+                                         Text (' Best: $baseScore', style: TextStyle(color: kColorPureWhite,
                                                                               fontSize: 30.0, fontFamily: kDefaultFont,
                                                                               fontWeight: FontWeight.w800),),
                                         ],),
@@ -132,4 +142,45 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     );
   }
 
+}
+
+// -----------------------
+// Independence Functions!
+// -----------------------
+void resetBestScoreAlertDialog(BuildContext context) {
+  // set up the buttons
+  Widget cancelButton = FlatButton(
+    child: Text("Cancel", style: kDefaultTS.copyWith(color: kColorBlack),),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = FlatButton(
+    child: Text("Reset", style: kDefaultTS.copyWith(color: kColorBlack),),
+    onPressed: () {
+      Navigator.of(context).pop();
+      Timer(Duration(milliseconds: 100), () {
+        DBService.instance.resetBestScore(0);
+        Navigator.of(context).pop();
+      });
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    backgroundColor: kColorThemeGreen,
+    title: Text("Reset your Best Score?", style: kDefaultTS.copyWith(color: kColorPureBlack)),
+    content: Text("Do you wish to set your Best Score to zero?", style: kDefaultTS.copyWith(color: kColorWhite)),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

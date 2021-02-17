@@ -36,6 +36,7 @@ const Icon kIncorrectIcon = Icon(Icons.clear, color: Colors.white,);
 
 const Icon kGoIcon = Icon(Icons.forward, color: Colors.white,);
 const Icon kHomeIcon = Icon(Icons.home, color: Colors.white,);
+const Icon kFavoriteScoreIcon = Icon(Icons.favorite, size: 22, color: kColorThemeRed);
 
 // --> Constants
 const int kNumberOfQuestionsPerSet = 10;
