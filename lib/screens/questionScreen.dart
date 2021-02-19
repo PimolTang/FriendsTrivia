@@ -36,6 +36,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
   List<Icon> _lstAnsIcons = [null,null,null,null];
   List<Color> _lstAnsColor = [null,null,null,null];
+  List<bool> _lstAnsBlinkFlag = [false, false, false, false];
 
 //    var _pd = MediaQuery.of(context).padding;
 //    double _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
@@ -58,6 +59,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
     _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
     _lstAnsIcons.fillRange(0, 4, null); //Icon(Icons.check, color: kColorThemeTeal,));
+    _lstAnsBlinkFlag.fillRange(0, 4, false);
 
     pageScore = DBService.instance.getCurrScore();
 
@@ -132,13 +134,13 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                                                       onFinished: () {
                                                                         setState(() {
                                                                            _timeSec = 0;
-                                                                           // Show Answer Questions; Color and Icon
-                                                                           // TODO: TO CHECK -- How to brink Answer button.
+                                                                           // Show Answer Questions; Blinking and BgColor
+                                                                           _lstAnsBlinkFlag[DBService.currQBanks[pageID].correctAnswer] = true;
                                                                            _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
 
                                                                            // CASE: TIMEOUT:
                                                                            // OPTION 1: --> GO TO scoresumscreen right away!
-                                                                           Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec), () {
+                                                                           Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec+1000), () {
                                                                              Navigator.pushNamed(context, '/scoresum');
                                                                            });
 
@@ -187,18 +189,22 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                             AnswerButton(color: _lstAnsColor[0], label: "A",
                                          text: DBService.instance.getAnswer1Text(pageID),
                                          trailingIcon: _lstAnsIcons[0],
+                                         blinkFlag: _lstAnsBlinkFlag[0],
                                          onPressed: () { _answerEntered(context, 0); },),
                             AnswerButton(color: _lstAnsColor[1], label: "B",
                                          text: DBService.instance.getAnswer2Text(pageID),
                                          trailingIcon: _lstAnsIcons[1],
+                                         blinkFlag: _lstAnsBlinkFlag[1],
                                          onPressed: () { _answerEntered(context, 1); },),
                             AnswerButton(color: _lstAnsColor[2], label: "C",
                                          text: DBService.instance.getAnswer3Text(pageID),
                                          trailingIcon: _lstAnsIcons[2],
+                                         blinkFlag: _lstAnsBlinkFlag[2],
                                          onPressed: () { _answerEntered(context, 2); },),
                             AnswerButton(color: _lstAnsColor[3], label: "D",
                                          text: DBService.instance.getAnswer4Text(pageID),
                                          trailingIcon: _lstAnsIcons[3],
+                                         blinkFlag: _lstAnsBlinkFlag[3],
                                          onPressed: () { _answerEntered(context, 3); },),
                             SizedBox(height: 12.0,),
                             Visibility (

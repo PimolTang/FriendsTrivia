@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:friendstrivia/models/argParameters.dart';
 import 'package:friendstrivia/resources/constances.dart';

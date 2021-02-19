@@ -20,7 +20,6 @@ const kColorRed = Colors.redAccent;
 
 const kCorrectColor = Colors.lightGreenAccent;
 const kIncorrectColor = Colors.pinkAccent;
-
 const kShowAnswerColor = Colors.yellowAccent;
 
 //--> F O N T S

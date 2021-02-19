@@ -1,6 +1,8 @@
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:friendstrivia/resources/constances.dart';
+import 'package:friendstrivia/widgets/myBlinkButton.dart';
+import 'package:twinkle_button/twinkle_button.dart';
 import '../models/dbService.dart';
 import '../models/questionBank.dart';
 
@@ -31,7 +33,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               //--> Section 1:
-                kFriendsBanner,
+              kFriendsBanner,
               //--> Section 2:
               Container (
                 alignment: Alignment.topCenter,
@@ -49,27 +51,17 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               //--> Section 3:
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20.0),
-                decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              colors: [kColorThemeRed, kColorThemeLightPurple])
-                            ),
-                child: RaisedButton(
-                              child: Row (
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                 Text(' Get Started! ', style: TextStyle(color: kColorPureWhite,fontFamily: kDefaultFont, fontSize: 20.0),),
-                                 kGoIcon,
-                              ]
-                              ),
-                color: kColorThemeGreen,
-                onPressed: () {
-                     Navigator.pushNamed(context, '/mainmenu');
-                   },
-                ),
+                child: TwinkleButton(
+                         buttonTitle:Text(' Get Started >> ', style:
+                                     TextStyle(color: kColorThemeLightPurple,fontFamily: kDefaultFont, fontSize: 20.0, fontStyle: FontStyle.italic),),
+                         buttonColor: kColorThemeGreen,
+                         onclickButtonFunction: () {
+                                    Navigator.pushNamed(context, '/mainmenu');
+                                  },
+                         durationTime: 2,
+                         twinkleTime: 350
+                        ),
               )
-
             ]
           ),
         ),
