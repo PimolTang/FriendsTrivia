@@ -80,11 +80,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                 kFriendsBanner,
 
                 Row( mainAxisAlignment: MainAxisAlignment.center,
-                     children: <Widget> [Icon(Icons.assistant_photo, color: Colors.orange, size: 30.0,),
-                                         Text (' Best: $baseScore', style: TextStyle(color: kColorPureWhite,
-                                                                              fontSize: 30.0, fontFamily: kDefaultFont,
-                                                                              fontWeight: FontWeight.w800),),
-                                        ],),
+                     children: <Widget> [kBestIcon,
+                                         Text (' Best: $baseScore  ', style: TextStyle(color: kColorWhite,
+                                                                    fontSize: 30.0, fontFamily: kDefaultFont,
+                                                                    fontWeight: FontWeight.w800),),
+                                         ],),
                 //--> Section 2: MENU
                 // TODO: put SizedBox() here with the calculatedHeights
                 SingleChildScrollView (
@@ -95,7 +95,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             //--> Section 2.1:
                             RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
                                 menuIcon: Icons.weekend_outlined,
-                                text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorPureWhite),),
+                                text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorWhite),),
                                 onPressed: () async {
                                         // Set SectionID = 1
                                         await DBService.instance.setcurrSectionID(1);
@@ -105,7 +105,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             //--> Section 2.2:
                             RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
                               menuIcon: Icons.camera,
-                                text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorPureWhite)),
+                                text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorWhite)),
                                 onPressed: () async {
                                         // Set SectionID = 2
                                         await DBService.instance.setcurrSectionID(2);

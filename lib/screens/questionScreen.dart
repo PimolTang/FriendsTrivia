@@ -8,6 +8,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 // import 'package:vector_math/vector_math_64.dart';
 import '../models/dbService.dart';
 import '../resources/constances.dart';
+import 'package:audioplayers/audio_cache.dart';
 
 class QuestionScreen extends StatefulWidget {
   int secID, pageID;
@@ -30,9 +31,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   bool _timeStoppedFlag = false;
   int pageScore;
   int newAdditionalScore;
-
   int _selectedAnswer = 0;
-  bool _previouslyAnswered;
+  final soundPlayer = AudioCache();
 
   List<Icon> _lstAnsIcons = [null,null,null,null];
   List<Color> _lstAnsColor = [null,null,null,null];
@@ -133,20 +133,23 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                                                                   },
                                                                       onFinished: () {
                                                                         setState(() {
-                                                                           _timeSec = 0;
-                                                                           // Show Answer Questions; Blinking and BgColor
-                                                                           _lstAnsBlinkFlag[DBService.currQBanks[pageID].correctAnswer] = true;
-                                                                           _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
+                                                                          // CASE: TIMEOUT:
+                                                                          _timeSec = 0;
+                                                                          // Show Answer Questions; Blinking and BgColor
+                                                                          _lstAnsBlinkFlag[DBService.currQBanks[pageID].correctAnswer] = true;
+                                                                          _lstAnsColor[DBService.currQBanks[pageID].correctAnswer] = kShowAnswerColor;
 
-                                                                           // CASE: TIMEOUT:
-                                                                           // OPTION 1: --> GO TO scoresumscreen right away!
-                                                                           Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec+1000), () {
-                                                                             Navigator.pushNamed(context, '/scoresum');
-                                                                           });
+                                                                          // Play sound
+                                                                          soundPlayer.play(kTimedOutSound); // Play Sound of finished/timed out.
 
-                                                                          // ** OPTION 2: To go to next question (GOH: please uncomment below if you want to). **
-                                                                          // onNextQuestion(pageID, 5000);
+                                                                          // NEXT PAGE:
+                                                                             // OPTION 1: --> GO TO scoresumscreen right away!
+                                                                             Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec), () {
+                                                                               Navigator.pushReplacementNamed(context, '/scoresum');
+                                                                             });
 
+                                                                             // ** OPTION 2: To go to next question (GOH: please uncomment below if you want to). **
+                                                                            // onNextQuestion(pageID, 5000);
                                                                         });
                                                                       },
                                                                       onCanceled: (unit, point) {
@@ -173,8 +176,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                       padding: EdgeInsets.symmetric(horizontal: 14.0,vertical: 18.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
-                                                             style: TextStyle(fontSize: 24.0,
-                                                                    color: kColorPureWhite, fontFamily: kDefaultFont,)),
+                                                                  style: TextStyle(fontSize: 24.0,
+                                                                  color: kColorWhite, fontFamily: kDefaultFont,)),
                           )]),
                     ),
 
@@ -240,40 +243,16 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 //      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 //    );
 
-
   }
 
-  // -------------------
-  //  F U N C T I O N S
-  // -------------------
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
-//  // NOTE: This method will be triggered when 'hasAnswered' parameter has changed.
-//  Color _answerCorrectAndSelectedOrNot(int i) {
-//    // Case: When 'the correct answer', ('selected' or 'not') --> give Green to that button
-//    if (_isAnsCorrect(i)) {
-//      _lstAnsIcons[i-1] = kCorrectIcon;
-//      return kColorGreen; // kColorLightGreen;
-//    } else {
-//      // Case: When 'the incorrect answer':
-//      if (_selectedAnswer == i) {
-//        _lstAnsIcons[i-1] = kIncorrectIcon;
-//        // _boolNextQuesBtnVisibility = true;
-//        return kColorLightRed; // 'the incorrect answer' got selected.
-//      } else {
-//        return kColorWhite; // 'the incorrect answer' & NOT selected.
-//      }
-//    }
-//  }
-//
-//  @override
-//  void dispose() {
-//    super.dispose();
-//    _animationController.dispose();
-//  }
-
-// -------------------------------
-// Functions in Stateful Widgets!
-// -------------------------------
+// -------------------------------------------
+//  F U N C T I O N S in Stateful Widgets!
+// -------------------------------------------
   void _answerEntered(BuildContext context, int selAns) async {
     if (!_alreadyAnswered) {
       _alreadyAnswered = true;
@@ -290,6 +269,9 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
       // Case: C O R R E C T
       if (DBService.currQBanks[pageID].correctAnswer == selAns) {
+        // Sound - CORRECT SOUND
+        soundPlayer.play(kCorrectSound);
+        // Score calculations
         newAdditionalScore = 50;
         print('DEBUG: TIME REMAINING = $_timeSec' );
         newAdditionalScore = (_timeSec > 10) ? 200 + newAdditionalScore : ((_timeSec > 5) ? 100 + newAdditionalScore : 50 + newAdditionalScore);
@@ -304,11 +286,14 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
           _lstAnsColor[selAns] = kCorrectColor;
           correctOrIncorrect = Text(' Correct! +$newAdditionalScore', style: kDefaultTS.copyWith(fontSize: 18.0,color: kCorrectColor),);
         });
+
         // CASE: CORRECT --> CONTINUE To the next question
         // Goto the next question
         onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
       } else {
         // Case: I N C O R R E C T (need to set Correct one and the Selected one)
+        // Sound - INCORRECT SOUND
+        soundPlayer.play(kInCorrectSound);
         setState(() {
           _timeStoppedFlag = true;
           _lstAnsIcons[correctAns] = kCorrectIcon;
@@ -318,10 +303,13 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
           correctOrIncorrect = Text(' Incorrect! ', style: kDefaultTS.copyWith(fontSize: 16.0,color: kColorRed),);
         });
 
+
+
+
         // CASE: INCORRECT
         // OPTION 1: --> GO TO scoresumscreen right away!
         Timer(Duration(milliseconds: kDelayBetweenQuestionMilliSec), () {
-          Navigator.pushNamed(context, '/scoresum');
+          Navigator.pushReplacementNamed(context, '/scoresum');
         });
 
         // ** OPTION 2: To go to next question (GOH: please uncomment below if you want to). **
@@ -348,9 +336,9 @@ void pauseAlertDialog(BuildContext context) {
       Navigator.of(context).pop();
       Timer(Duration(milliseconds: 100), () {
         Navigator.of(context).pop();
-        // TODO: Go to Summary page (To be created later!!)
-        Navigator.of(context).pushNamed('/scoresum');
-      });
+        // TODO: Go to Summary page
+        Navigator.pushReplacementNamed(context, '/scoresum');
+       });
     },
   );
   // set up the AlertDialog

@@ -63,7 +63,7 @@ class _QuestionPageViewState extends State<QuestionPageView> {
       });
     }  else {
       Timer(Duration(milliseconds: (waitMilliSec/2).round()), () {
-          Navigator.pushNamed(context, '/scoresum');
+          Navigator.pushReplacementNamed(context, '/scoresum');
       });
     }
   }

@@ -10,10 +10,10 @@ const kColorThemeRed = Color(0xffBF1C38);
 const kColorThemeGreen =  Color(0xff8ABF1C);
 const kColorThemeTeal =  Color(0xff1CBFA3);
 
-const kColorWhite = Colors.white70;
+//const kColorWhite = Colors.white70;
 const kColorBlack = Colors.black87;
 const kColorPureBlack = Colors.black;
-const kColorPureWhite = Colors.white;
+const kColorWhite = Colors.white;
 
 const kColorYellow = Colors.yellowAccent;
 const kColorRed = Colors.redAccent;
@@ -36,13 +36,26 @@ const Icon kIncorrectIcon = Icon(Icons.clear, color: Colors.white,);
 const Icon kGoIcon = Icon(Icons.forward, color: Colors.white,);
 const Icon kHomeIcon = Icon(Icons.home, color: Colors.white,);
 const Icon kFavoriteScoreIcon = Icon(Icons.favorite, size: 22, color: kColorThemeRed);
+const Icon kFavoriteScoreBigIcon = Icon(Icons.favorite, size: 34, color: kColorThemeRed);
+// NOTE:
+const Icon kBestIcon = Icon( Icons.grade, size: 30, color: kColorThemeRed);
+
+//--> S O U N D S
+const String kCorrectSound = 'sounds/Correct-answer.mp3';
+const String kInCorrectSound = 'sounds/Incorrect-answer.mp3';
+const String kTimedOutSound = 'sounds/Finish-answer.mp3';
 
 // --> Constants
-const int kNumberOfQuestionsPerSet = 10;
+const int kNumberOfQuestionsPerSet = 20;
 const int kTimeSecPerQuestion = 20;
 const int kDelayBetweenQuestionMilliSec = 3000; // 3000;
 const String kSection1Name = "In TV Series Trivia";
 const String kSection2Name = "\'Who said this?\' Trivia";
+
+const String kFanLevel1  = "Wow! You are the Biggest Fan!!";
+const String kFanLevel2  = "Not bad! Joey would be quite impressed with you.";
+const String kFanLevel3  = "Nobody likes a show-off, so everybody must like you!";
+const String kFanLevel4  = "On the bright side, you can only go up from here!";
 
 // TODO: TO BE USED
 const List<String> kSectionNames = [kSection1Name, kSection2Name];
@@ -75,3 +88,10 @@ Widget kFriendsBanner = Container(
 // 2. Silver Level: Just a Real True Fan
 // 3. Bronze Level: Just a Normal Fan
 // 4. Basic Level: Not-into-it Fan
+
+// BUGS:
+// 1. Disable Back button on ScoreSumScreen
+// 2. Put sounds; 3 cases!!
+// 3. Implement the new Countdown timer; https://pub.dev/packages/circular_countdown_timer!!
+
+

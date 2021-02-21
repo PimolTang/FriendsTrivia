@@ -24,9 +24,13 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
-        appBar: AppBar(title: Text('Score Summary', style: TextStyle(fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w800),),
-          backgroundColor: kColorThemeTeal,
-        ),        
+        appBar: AppBar(title: Center (
+                                child: Text('Score Summary', textAlign: TextAlign.center,
+                                style: TextStyle(fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w800),),
+        ),
+                       backgroundColor: kColorThemeTeal,
+                       automaticallyImplyLeading: false
+                       ),
         body: Center (
           child: Column (
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -34,30 +38,29 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         Image.network('https://image.shutterstock.com/image-illustration/award-golden-cup-game-medal-600w-1335539501.jpg',
                         scale: 2.4,
                         fit: BoxFit.fitWidth,),
-
-                Text('You are the Biggest Fan!!', style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorPureWhite),),
+                Text('You are the Biggest Fan!!', style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorWhite),),
                 //--> Line 3
                 Container(
                   margin: EdgeInsets.all(20.0),
                   height: 50,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: kColorThemeGreen,
-                    border: Border.all(color: kColorBlack, width: 3),
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
+                    color: kColorThemePurple, //kColorYellow,
+                    //border: Border.all(color: kColorBlack, width: 3),
+                    //borderRadius: BorderRadius.all(Radius.circular(18)),
                   ),
                   child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                             children: <Widget>[kFavoriteScoreIcon,
+                             children: <Widget>[kFavoriteScoreBigIcon,
                                                 Text(' Score: ${DBService.instance.getCurrScore()}',
                                                      textAlign: TextAlign.center,
-                                                     style: TextStyle(color: kColorWhite,
+                                                     style: TextStyle(color: kColorBlack, //kColorWhite,
                                                             fontWeight: FontWeight.w800,
-                                                            fontSize: 16.0),),
+                                                            fontSize: 20.0),),
                                                ])
                 ),
                 //--> Line 4:
 
-                Text('Best: $baseScore', style: kDefaultTS.copyWith(fontSize: 26.0, color: kColorPureWhite),),
+                Text('Best: $baseScore', style: kDefaultTS.copyWith(fontSize: 26.0, color: kColorWhite),),
 
                 //--> Line 5:
                 Container (
@@ -65,7 +68,6 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                   child: Column (
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:  <Widget> [
-
                         RaisedButton (
                           child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
                           color: kColorThemeGreen,
@@ -73,9 +75,10 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                             // Reset CurrScore
                             await DBService.instance.setCurrScore(0);
                             try {
-                              int count = 0;
-                              // Go back to Main Menu
-                              Navigator.of(context).popUntil((_) => count++ >= 2);
+                              //int count = 0;
+                              //// Go back to Main Menu
+                              //Navigator.of(context).popUntil((_) => count++ >= 2);
+
                               // Go to the same Section ID
                               Navigator.pushNamed(context, '/questions', arguments: ArgParameters(DBService.currSectionID, 0));
                             } catch (ex){

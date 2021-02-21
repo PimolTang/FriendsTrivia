@@ -16,9 +16,13 @@ dependencies:
   cupertino_icons: ^1.0.0
   twinkle_button: ^0.0.3
   progress_indicators: ^0.1.5
+  audioplayers: ^0.12.0
+  #audioplayers: ^0.17.4
+
+  # TODO: change 'circular_countdown' to 'https://pub.dev/packages/circular_countdown_timer'
   circular_countdown: ^1.2.1
 
-# TODO: Social_Share: https://fluttergems.dev/sharing-intent/
+  # TODO: Social_Share: https://fluttergems.dev/sharing-intent/
 
 
 dev_dependencies:
@@ -30,6 +34,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/sounds/
   fonts:
     - family: TitilliumWeb
       fonts:
