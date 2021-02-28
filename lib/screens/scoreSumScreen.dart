@@ -14,8 +14,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
   void initState() {
     DBService.instance.updateBestScore(DBService.instance.getCurrScore());
     DBService.instance.getBestScore().then((value) {
-      setState(() {
-        // Read the new 'value' from database, in case .updateBestScore(n) has changed the BestScore!
+      setState(() { // Read the new 'value' from database, in case .updateBestScore(n) has changed the BestScore!
         baseScore = value;
       });
     });

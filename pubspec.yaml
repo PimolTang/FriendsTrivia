@@ -18,11 +18,7 @@ dependencies:
   progress_indicators: ^0.1.5
   audioplayers: ^0.12.0
 
-  # TODO: change 'circular_countdown' to 'https://pub.dev/packages/circular_countdown_timer'
-  #circular_countdown: ^1.2.1
-
   # TODO verion 1.1: Social_Share: https://fluttergems.dev/sharing-intent/
-
 
 dev_dependencies:
   flutter_test:
