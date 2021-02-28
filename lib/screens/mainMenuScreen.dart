@@ -99,6 +99,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                 onPressed: () async {
                                         // Set SectionID = 1
                                         await DBService.instance.setcurrSectionID(1);
+                                        await loadQuestionsForSecID(1);
                                         Navigator.pushNamed(context, '/questions', arguments: ArgParameters(1,0));
                                       },
                                 ),
@@ -109,6 +110,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                 onPressed: () async {
                                         // Set SectionID = 2
                                         await DBService.instance.setcurrSectionID(2);
+                                        await loadQuestionsForSecID(2);
                                         Navigator.pushNamed(context, '/questions', arguments: ArgParameters(2,0)); //, arguments: currStatus);
                                       },
                             ),
@@ -117,21 +119,22 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                   ),
                 ),
 
-                Padding (
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget> [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget> [
-                                   SizedBox(height: 10.0,),
-                                   Text (' Write to Us', style: TextStyle(color: kColorWhite, fontFamily: kDefaultFont,
-                                                                fontSize: 18.0, fontWeight: FontWeight.w600)),
-                                  ],)
-                    ],
-                  ),
-                )
+//                - TO - BE - USED - IN - VERSION 1.1.0 -
+//                Padding (
+//                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+//                  child: Row(
+//                    mainAxisAlignment: MainAxisAlignment.start,
+//                    children: <Widget> [
+//                      Column(
+//                        mainAxisAlignment: MainAxisAlignment.start,
+//                        children: <Widget> [
+//                                   SizedBox(height: 10.0,),
+//                                   Text (' Write to Us', style: TextStyle(color: kColorWhite, fontFamily: kDefaultFont,
+//                                                                fontSize: 18.0, fontWeight: FontWeight.w600)),
+//                                  ],)
+//                    ],
+//                  ),
+//                )
 
               ]
 
@@ -139,6 +142,15 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         ),
       ),
     );
+  }
+
+  // Functions:
+  loadQuestionsForSecID(int _secID) async {
+    await DBService.instance.refreshQuestionBankRandomly(_secID).then((value) {
+      DBService.currQBanks = value;
+      print('Done!!');
+    });
+    Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
   }
 
 }

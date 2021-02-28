@@ -37,13 +37,6 @@
             </list>
           </value>
         </entry>
-        <entry key="circular_countdown">
-          <value>
-            <list>
-              <option value="$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/circular_countdown-1.2.1/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="clock">
           <value>
             <list>
@@ -346,7 +339,6 @@
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0-nullsafety.1/lib" />
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.1.0-nullsafety.3/lib" />
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/charcode-1.2.0-nullsafety.1/lib" />
-      <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/circular_countdown-1.2.1/lib" />
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/clock-1.1.0-nullsafety.1/lib" />
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0-nullsafety.3/lib" />
       <root url="file://$USER_HOME$/Developer/flutter/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1/lib" />

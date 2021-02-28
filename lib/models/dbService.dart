@@ -14,6 +14,7 @@ class DBService {
   static final _tableNameScore = 'Score';
 
   static int currSectionID, currScore = 0, currBestScore = 0; // NOT SURE IF we need 'currBestScore'???
+  static int currBasicScore = 0, currTimeBonus = 0, currCorrectQ = 0;
   static List<QuestionBank> currQBanks;
 
 // Making it a singleton class (create an instance)
@@ -96,8 +97,8 @@ class DBService {
   }
 
   // Refresh Questions Bank according to SectionID
-  Future<int> refreshQuestionBankRandomly (int secID) async {
-    // CHECK FIRST: if Questions left is less than 10 questions;
+  Future<List<QuestionBank>> refreshQuestionBankRandomly (int secID) async {
+    // CHECK FIRST: if Questions left is less than 20 questions;
     if(await DBService.instance.getQuestionNumberLeft(secID) < kNumberOfQuestionsPerSet ) {
       await resetGotSelected(secID);
     }
@@ -115,8 +116,7 @@ class DBService {
           rs[i]["selectedAnswer"], rs[i]["isCorrect"],rs[i]["gotSelected"])
       );
     }
-    currQBanks = await qb;
-    return qb.length;
+    return qb;
   }
 
   // Set currSectionID

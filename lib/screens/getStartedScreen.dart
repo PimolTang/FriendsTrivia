@@ -5,26 +5,16 @@ import 'package:twinkle_button/twinkle_button.dart';
 import '../models/dbService.dart';
 import '../models/questionBank.dart';
 
-//import 'package:audioplayers/audio_cache.dart';
-// import 'package:audioplayers/audioplayers.dart';
-
 class GetStartedScreen extends StatefulWidget {
   @override
   _GetStartedScreenState createState() => _GetStartedScreenState();
 }
-
 class _GetStartedScreenState extends State<GetStartedScreen> {
-  // AudioCache _audioCache;
-
- // final player = AudioCache();
 
   @override
   void initState() {
     super.initState();
     ensureAllQuestionsLoaded();
-    // create this only once
-    //// _audioCache = AudioCache(prefix: "sounds/", fixedPlayer: AudioPlayer()..setReleaseMode(ReleaseMode.STOP));
-
   }
 
   @override
@@ -42,15 +32,6 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
             children: <Widget>[
               //--> Section 1:
               kFriendsBanner,
-
-
-//              RaisedButton(
-//                //onPressed: () => _audioCache.play('Correct-answer.mp3'),
-//                onPressed: () => player.play('sounds/Correct-answer.mp3'),
-//                child: Text("Play Audio"),
-//              ),
-
-
               //--> Section 2:
               Container (
                 alignment: Alignment.topCenter,

@@ -17,13 +17,23 @@ class _QuestionPageViewState extends State<QuestionPageView> {
   PageController _pageController = PageController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Reset current Basic Score and current Time bonus score
+    DBService.currBasicScore = 0;
+    DBService.currTimeBonus = 0;
+    DBService.currCorrectQ = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     int _secID;
     // Set RouteSetting to tap into 'Widget' passed from Parent
     RouteSettings settings = ModalRoute.of(context).settings;
     widget._arg = settings.arguments;
-//TODO:    _secID = widget._arg.secId;
+    //TODO:    _secID = widget._arg.secId;
     // ----------------------------------------------------
 
     return Scaffold(
@@ -35,13 +45,11 @@ class _QuestionPageViewState extends State<QuestionPageView> {
               physics: NeverScrollableScrollPhysics(), //AlwaysScrollableScrollPhysics(),
               itemCount: kNumberOfQuestionsPerSet,
               itemBuilder: (context, index) {
-                //Load Questions by SectionID
-                loadQuestionsForSecID(DBService.currSectionID);
-                return QuestionScreen(secID: DBService.currSectionID,
-                                      pageID: index,
-                                      bookmarked: true,
-                                      onNextQ: _callBackNextQuestion,
-                                     );
+                            return QuestionScreen(secID: DBService.currSectionID,
+                                                  pageID: index,
+                                                  bookmarked: true,
+                                                  onNextQ: _callBackNextQuestion,
+                                                 );
               },
               onPageChanged: (index) {}
           ),
@@ -50,12 +58,6 @@ class _QuestionPageViewState extends State<QuestionPageView> {
   }
 
   // Functions
-
-  loadQuestionsForSecID(int _secID) async {
-    await DBService.instance.refreshQuestionBankRandomly(_secID);
-    Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
-  }
-
   void _callBackNextQuestion(int qID, waitMilliSec) async {
     if (qID < (kNumberOfQuestionsPerSet-1)) {
       Timer(Duration(milliseconds: waitMilliSec), () {
