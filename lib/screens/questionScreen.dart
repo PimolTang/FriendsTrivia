@@ -121,9 +121,9 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                   ],),
                                   Row (children: <Widget> [  kTimerIcon,
                                                              AnimatedBuilder(animation: controller, builder: (context, child) {
-                                                               return Text(' $_timeLeft', style: TextStyle(fontSize: 22.0, fontFamily: kDefaultFont,
-                                                                                         color: (_timeLeft < 6) ? kColorThemeRed : kColorWhite,
-                                                                                         fontWeight: FontWeight.w600));
+                                                               return Text(' $_timeLeft',style: TextStyle(fontSize: 22.0, fontFamily: kDefaultFont,
+                                                                                         color: (_timeLeft > 11) ? kColorWhite : (_timeLeft < 6) ? kColorThemeRed : kColorYellow,
+                                                                                         fontWeight: FontWeight.w800));
                                                              })
                                                             ]
                                   ),
@@ -286,7 +286,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         Navigator.of(context).pop();
         Timer(Duration(milliseconds: 100), () {
           Navigator.of(context).pop();
-          // TODO: Go to Summary page
           Navigator.pushReplacementNamed(context, '/scoresum');
         });
       },

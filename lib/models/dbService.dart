@@ -155,17 +155,19 @@ class DBService {
     if (DBService.currScore != null) DBService.currScore = newValue;
   }
 
-  // TO DO
+  // Get BastScore from Database
   Future<int> getBestScore() async {
     int retInt = 0;
     // prepare DB
     Database db  = await instance.database;
     List<Map> _scoreRecords = await db.rawQuery('Select score from $_tableNameScore');
     retInt = await _scoreRecords[0]["score"];
+    currBestScore = retInt;
     return retInt;
   }
 
-  void updateBestScore(int newValue) async {
+  //** EnsureBaseScore() is only running between question (OnChange() in Question Page View)
+  void ensureBestScore(int newValue) async {
     // prepare DB
     Database db  = await instance.database;
     // query baseScore

@@ -51,7 +51,10 @@ class _QuestionPageViewState extends State<QuestionPageView> {
                                                   onNextQ: _callBackNextQuestion,
                                                  );
               },
-              onPageChanged: (index) {}
+              onPageChanged: (index) async {
+                // Check if Current Score is higher than current Best Score or not - if so, update CurrentBaseScore
+                await DBService.instance.ensureBestScore(DBService.instance.getCurrScore());
+              }
           ),
         )
     );

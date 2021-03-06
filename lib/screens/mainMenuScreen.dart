@@ -17,6 +17,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   Widget build(BuildContext context) {
 
     DBService.instance.getBestScore().then((value) {
+      // then (above) is kind of a force-to-wait mechanism!
       setState(() {
         baseScore = value;
       });
@@ -25,13 +26,13 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
-        drawer: Theme (
-          data: Theme.of(context).copyWith(canvasColor: kColorWhite),
+        drawer: Theme(
+          data: Theme.of(context).copyWith(canvasColor: kColorThemeTeal),
           child: Align(alignment: Alignment.topLeft,
             child: ClipRRect( borderRadius: BorderRadius.only(bottomRight: Radius.circular(40)),
               child: Container (
-                width: 222,
-                height: 240, //180,
+                width: 224,
+                height: 180,
                 child:
                 Drawer(
                   child:
@@ -46,20 +47,20 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           ),),
                         color: kColorThemeGreen ,),
                       Container(alignment: Alignment.topLeft,
-                        child: ListTile(leading: Icon(Icons.delete_forever),
-                          title: InkWell (child: Text('Reset Your Best Score',style: kDefaultTS),
-                              onTap: () {
-                                 resetBestScoreAlertDialog(context);
-                              }                                                                                     ),),
-                        color: kColorThemeTeal,),
+                                child: ListTile(leading: Icon(Icons.info_outline),
+                                title: InkWell (child: Text('Game Info',style: kDefaultTS),
+                                onTap: () {
+                                         showGameInfoDialog(context);
+                                        }                                                                                     ),),
+                                color: kColorThemeTeal,),
+                      Container(alignment: Alignment.topLeft,
+                                child: ListTile(leading: Icon(Icons.delete_forever),
+                                title: InkWell (child: Text('Reset Your Best Score',style: kDefaultTS),
+                                onTap: () {
+                                         resetBestScoreAlertDialog(context);
+                                        }                                                                                     ),),
+                               color: kColorThemeTeal,),
 
-//                      Container(alignment: Alignment.topLeft,
-//                        child: ListTile(leading: Icon(Icons.delete_forever),
-//                          title: InkWell (child: Text('Reset AusValue answers'),
-//                              onTap: () { resetAusValueAnswersAlertDialog(context);
-//                              }
-//                          ),),
-//                        color: kColorGrey,),
                     ],
                   ),
                 ),
@@ -148,7 +149,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   loadQuestionsForSecID(int _secID) async {
     await DBService.instance.refreshQuestionBankRandomly(_secID).then((value) {
       DBService.currQBanks = value;
-      print('Done!!');
     });
     Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
   }
@@ -162,9 +162,7 @@ void resetBestScoreAlertDialog(BuildContext context) {
   // set up the buttons
   Widget cancelButton = FlatButton(
     child: Text("Cancel", style: kDefaultTS.copyWith(color: kColorBlack),),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
+    onPressed: () => Navigator.of(context).pop()
   );
   Widget continueButton = FlatButton(
     child: Text("Reset", style: kDefaultTS.copyWith(color: kColorBlack),),
@@ -179,10 +177,49 @@ void resetBestScoreAlertDialog(BuildContext context) {
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     backgroundColor: kColorThemeGreen,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24.0))),
     title: Text("Reset your Best Score?", style: kDefaultTS.copyWith(color: kColorPureBlack)),
     content: Text("Do you wish to set your Best Score to zero?", style: kDefaultTS.copyWith(color: kColorWhite)),
+    actions: [cancelButton, continueButton],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+void showGameInfoDialog(BuildContext context) {
+  // set up the buttons
+  Widget continueButton = FlatButton(
+    child: Text("Okay...", style: kDefaultTS.copyWith(color: kColorBlack),),
+    onPressed: () => Navigator.of(context).pop()
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    backgroundColor: kColorThemeGreen,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24.0))),
+    scrollable: true,
+    title: Text("Game Information", style: kDefaultTS),
+    content: Column(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+               Text('This is a trivia-based game.',style: kDefaultWhiteTS),
+               Text('\nThe player can choose either',style: kDefaultWhiteTS),
+               Text('"In TV Series Friends Trivia" or "Who said this? Trivia",',style: kDefaultWhiteTS),
+               Text('\n20 of questions each game',style: kDefaultWhiteTS),
+               Text('You will have 20 seconds for each question.',style: kDefaultWhiteTS),
+               Text('\nFour possible answers are given.',style: kDefaultWhiteTS),
+               Text('\nYou will receive scores for every correct answer. ',style: kDefaultWhiteTS),
+        //     You'll also be given the ability to share your score with your Facebook friends.
+        //     These features require Internet access.
+               Text('\nThe game ends once you answer any question incorrectly, the time is up or if you answer ALL questions correctly!',style: kDefaultWhiteTS),
+
+               ]),
+
     actions: [
-      cancelButton,
       continueButton,
     ],
   );

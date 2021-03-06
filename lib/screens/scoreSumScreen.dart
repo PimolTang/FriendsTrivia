@@ -9,21 +9,9 @@ class ScoreSumScreen extends StatefulWidget {
 }
 
 class _ScoreSumScreenState extends State<ScoreSumScreen> {
-  int baseScore;
-  @override
-  void initState() {
-    DBService.instance.updateBestScore(DBService.instance.getCurrScore());
-    DBService.instance.getBestScore().then((value) {
-      setState(() { // Read the new 'value' from database, in case .updateBestScore(n) has changed the BestScore!
-        baseScore = value;
-      });
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
@@ -32,8 +20,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
 //                                style: TextStyle(fontFamily: kDefaultFont, color: kColorWhite,fontWeight: FontWeight.w800),),
 //                              ),
 //                       backgroundColor: kColorThemeTeal,
-//                       automaticallyImplyLeading: false
-//                       ),
+//                       automaticallyImplyLeading: false ),
         body: Center (
           child: Column (
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -45,35 +32,47 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         Container(
                             margin: EdgeInsets.all(20.0),
                             alignment: Alignment.center,
-                            height: 300,
+                            height: 360,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: kColorWhite, //kColorYellow,
+                              color: kBlueLightColor,
                               border: Border.all(color: Colors.blue, width: 3),
                               borderRadius: BorderRadius.all(Radius.circular(18)),
 
                             ),
                             child: Column (
-                                   children: [ Text('Game Completed', style: TextStyle(fontFamily: kDefaultFont, color: kColorBlack,
-                                                                      fontSize: 30.0, fontWeight: FontWeight.w600)),
-                                               Row(mainAxisAlignment: MainAxisAlignment.center,
-                                               children: <Widget>[Text('\n Basic Score: ${DBService.currBasicScore}',
-                                                                        textAlign: TextAlign.center,
-                                                                        style: TextStyle(color: kColorBlack, //kColorWhite,
-                                                                        fontSize: 24.0),),
-                                                                  ]),
-                                               Text('Time Bonus:   ${DBService.currTimeBonus}',style: TextStyle(color: kColorBlack, //kColorWhite,
-                                                                 fontSize: 24.0),),
-                                               Text('Final Score:  ${DBService.currScore}',style: TextStyle(color: kColorBlack, //kColorWhite,
-                                                                  fontSize: 34.0),),
-                                               Text('Best: $baseScore', style: kDefaultTS.copyWith(fontSize: 26.0, color: kColorBlack ),),
-                                               Text(getFanMessage(), textAlign: TextAlign.center,
-                                                    style: kDefaultTS.copyWith(fontSize: 25.0, color: kColorBlack),),
+                                   children: [Container (padding: EdgeInsets.symmetric(vertical: 6.0),
+                                                         child: Text('Game Completed', style: TextStyle(fontFamily: kDefaultFont, color: kColorWhite,
+                                                                                                  fontSize: 30.0, fontWeight: FontWeight.w600)),
+                                                        ),
+
+                                              genDivider(),
+                                              genScoreRow("Basic Score:", DBService.currBasicScore, kBlueLightColor, 24.0),
+                                              genScoreRow("Time Bonus: ", DBService.currTimeBonus, kBlueAccentColor, 24.0),
+                                              genScoreRow("Final Score: ", DBService.currScore, kBlueLightColor, 30.0),
+                                              genDivider(),
+                                              genScoreRow("Best: ", DBService.currBestScore, kBlueAccentColor, 26.0),
+
+                                              Expanded (
+                                                child: Container(
+                                                  margin: EdgeInsets.all(8.0),
+                                                  alignment: Alignment.centerRight,
+                                                  padding: EdgeInsets.symmetric(vertical: 4.0),
+                                                  color: kBlueLightColor,
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [ Row(crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [Text(getFanMessage(), textAlign: TextAlign.center,
+                                                                        style: kDefaultTS.copyWith(fontSize: 25.0, color: kColorWhite),),
+                                                                      ],
+                                                      ),],
+                                                  ),
+                                                  ),
+                                              ),
                                           ],
                                         )
                                         ),
-                //--> Line 4:
-
                 //--> Line 5:
                 Container (
                   margin: EdgeInsets.all(20.0),
@@ -88,33 +87,43 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children:  <Widget> [
-                        RaisedButton (
-                          child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
+                        Material (
                           color: kColorThemeGreen,
-                          onPressed: () async {
-                            // Reset CurrScore
-                            await DBService.instance.setCurrScore(0);
-                            try {
-                              // Go to the same Section ID
-                              Navigator.pushNamed(context, '/questions', arguments: ArgParameters(DBService.currSectionID, 0));
-                            } catch (ex){
-                              print('Exception: $ex');
-                            }
-                          },
+                          borderRadius: BorderRadius.circular(10.0),
+                          elevation: 4.0,
+                          child: RaisedButton (
+                            child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
+                            color: kColorThemeGreen,
+                            onPressed: () async {
+                              // Reset CurrScore
+                              await DBService.instance.setCurrScore(0);
+                              try {
+                                // Go to the same Section ID
+                                Navigator.pushNamed(context, '/questions', arguments: ArgParameters(DBService.currSectionID, 0));
+                              } catch (ex){
+                                print('Exception: $ex');
+                              }
+                            },
+                          ),
                         ),
 
-                        RaisedButton (
-                          child: Text('Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 20.0),),
+                        Material (
                           color: kColorThemeGreen,
-                          onPressed: () async {
-                            await DBService.instance.setCurrScore(0);
-                            try {
-                              int count = 0;
-                              Navigator.of(context).popUntil((_) => count++ >= 2);
-                            } catch (ex){
-                              print('Exception: $ex');
-                            }
-                          },
+                          borderRadius: BorderRadius.circular(10.0),
+                          elevation: 4.0,
+                          child: RaisedButton (
+                            child: Text('Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
+                            color: kColorThemeGreen,
+                            onPressed: () async {
+                              await DBService.instance.setCurrScore(0);
+                              try {
+                                int count = 0;
+                                Navigator.of(context).popUntil((_) => count++ >= 1); //2
+                              } catch (ex){
+                                print('Exception: $ex');
+                              }
+                            },
+                          ),
                         ),
 
                         ]
@@ -127,6 +136,35 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
       ),
     );
   }
+
+  Widget genScoreRow(String lbl, int score, Color color, double fontSize) {
+    return Container (
+           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0), color: color,
+           child: Row(children: [
+                       Expanded (
+                        flex: 3,
+                        child: Text(lbl,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(color: kColorBlack, //kColorWhite,
+                                                     fontSize: fontSize),),
+                        ),
+                        Expanded (
+                         flex: 2,
+                         child: Text('$score',
+                                     textAlign: TextAlign.right,
+                                     style: TextStyle(color: kColorBlack, //kColorWhite,
+                                                      fontSize: fontSize),),
+                        )]),
+            );
+  }
+
+  Widget genDivider() {
+      return Container(
+          decoration: BoxDecoration(
+          border: Border.all(color: kColorBlack)),
+      );
+  }
+
   String getFanMessage() {
     String retStr = kFanLevel4;
     if (DBService.currCorrectQ > 15) { retStr = kFanLevel1; }
@@ -137,4 +175,5 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
     }
     return retStr;
   }
+
 }

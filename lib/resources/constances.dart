@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 //--> C O L O R S
 // From Canva: https://www.canva.com/colors/color-wheel/
@@ -23,12 +24,16 @@ const kCorrectColor = Colors.lightGreenAccent;
 const kIncorrectColor = Colors.pinkAccent;
 const kShowAnswerColor = Colors.yellowAccent;
 
+const kBlueAccentColor = Colors.blueAccent;
+const kBlueLightColor = Colors.lightBlue;
+
 //--> F O N T S
 const kDefaultFont = 'TitilliumWeb';
 const kGabrielWFont = 'GabrielW';
 
 //--> T E X T - S T Y L E S
 const kDefaultTS = TextStyle(fontFamily: kDefaultFont);
+const kDefaultWhiteTS = TextStyle(fontFamily: kDefaultFont, color: kColorWhite);
 
 //--> I C O N S
 const Icon kCorrectIcon = Icon(Icons.check, color: Colors.black87,);
@@ -81,9 +86,8 @@ Widget kFriendsBanner = Container(
                         );
 
 // -------------------
-// Fan Levels: 4
-// 1. Gold Level: Biggest Fan
-// 2. Silver Level: Just a Real True Fan
-// 3. Bronze Level: Just a Normal Fan
-// 4. Basic Level: Not-into-it Fan
+// TODO:
+// 1. A Feature to Share
+// 2. Silent Mode
+// 3.
 // -------------------
