@@ -82,7 +82,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 
                 Row( mainAxisAlignment: MainAxisAlignment.center,
                      children: <Widget> [kBestIcon,
-                                         Text (' Best: $baseScore  ', style: TextStyle(color: kColorWhite,
+                                         Text (' Best: ' + addComma(baseScore), style: TextStyle(color: kColorWhite,
                                                                     fontSize: 30.0, fontFamily: kDefaultFont,
                                                                     fontWeight: FontWeight.w800),),
                                          ],),
@@ -151,6 +151,13 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       DBService.currQBanks = value;
     });
     Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
+  }
+
+  String addComma(int score) {
+    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    Function mathFunc = (Match match) => '${match[1]},';
+    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
+    return scoreWithComma;
   }
 
 }

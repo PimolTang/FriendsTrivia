@@ -115,7 +115,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                          children: <Widget>[
                                   Row(children: <Widget>[
                                     kFavoriteScoreIcon,
-                                    Text(' ${DBService.instance.getCurrScore()}',
+                                    Text(addComma(DBService.instance.getCurrScore()),
                                          style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
                                     ),
                                   ],),
@@ -308,6 +308,13 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         return alert;
       },
     );
+  }
+
+  String addComma(int score) {
+    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    Function mathFunc = (Match match) => '${match[1]},';
+    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
+    return scoreWithComma;
   }
 
 }

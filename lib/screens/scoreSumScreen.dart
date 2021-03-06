@@ -32,7 +32,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         Container(
                             margin: EdgeInsets.all(20.0),
                             alignment: Alignment.center,
-                            height: 360,
+                            height: 380,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: kBlueLightColor,
@@ -63,9 +63,13 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                                     mainAxisSize: MainAxisSize.max,
                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                     children: [ Row(crossAxisAlignment: CrossAxisAlignment.center,
-                                                            children: [Text(getFanMessage(), textAlign: TextAlign.center,
-                                                                        style: kDefaultTS.copyWith(fontSize: 25.0, color: kColorWhite),),
-                                                                      ],
+                                                                children: [Flexible (child:
+
+                                                                                  Text(getFanMessage(), textAlign: TextAlign.center,
+                                                                                  style: kDefaultTS.copyWith(fontSize: 25.0, color: kColorWhite),),
+
+                                                                                ),
+                                                                          ],
                                                       ),],
                                                   ),
                                                   ),
@@ -138,6 +142,11 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
   }
 
   Widget genScoreRow(String lbl, int score, Color color, double fontSize) {
+
+    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    Function mathFunc = (Match match) => '${match[1]},';
+    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
+
     return Container (
            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0), color: color,
            child: Row(children: [
@@ -150,7 +159,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         ),
                         Expanded (
                          flex: 2,
-                         child: Text('$score',
+                         child: Text(scoreWithComma,
                                      textAlign: TextAlign.right,
                                      style: TextStyle(color: kColorBlack, //kColorWhite,
                                                       fontSize: fontSize),),

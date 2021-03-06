@@ -62,7 +62,7 @@ const List<String> kSectionNames = [kSection1Name, kSection2Name];
 const String kFanLevel1  = "\'Wow! You are the Biggest Fan!!\'";
 const String kFanLevel2  = "\'Not bad! Joey would be quite impressed with you.\'";
 const String kFanLevel3  = "\'Hmm, try again? You\'ve probably only caught this show whenever it was on TV.\'";
-const String kFanLevel4  = "\'Oh! Dear, we have a problem!\'";
+const String kFanLevel4  = "\'Oh! Dear, we have a problem!\' ";
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(
