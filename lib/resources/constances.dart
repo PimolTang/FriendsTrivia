@@ -86,7 +86,7 @@ Widget kFriendsBanner = Container(
                         );
 
 const double kQuestionHeight = 142;
-const double kNoBannerHeightForNow = 50; // NoBanner for Now!
+const double kNoBannerHeightForNow = 0; //50; // NoBanner for Now!
 
 // -------------------
 // TODO: version 1.1

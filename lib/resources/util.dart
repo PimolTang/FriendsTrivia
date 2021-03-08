@@ -14,5 +14,11 @@ playCorrectSound(pID) {
   String sound2Play = (pID%3 == 0) ? kCorrectSound3 : (pID.isEven ? kCorrectSound1 : kCorrectSound2);
   soundPlayer.play(sound2Play);
 }
-playInCorrectSound() => soundPlayer.play(kInCorrectSound);
-playFinishSound() => soundPlayer.play(kTimedOutSound);
+playInCorrectSound() {
+  soundPlayer.play(kInCorrectSound);
+  soundPlayer.clearCache();
+}
+playFinishSound() {
+  soundPlayer.play(kTimedOutSound);
+  soundPlayer.clearCache();
+}
