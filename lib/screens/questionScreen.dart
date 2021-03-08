@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-//import 'package:circular_countdown/circular_countdown.dart';
 import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/answerButton.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 // import 'package:vector_math/vector_math_64.dart';
 import '../models/dbService.dart';
 import '../resources/constances.dart';
-import 'package:audioplayers/audio_cache.dart';
+import '../resources/util.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class QuestionScreen extends StatefulWidget {
   int secID, pageID;
-  bool bookmarked;
   Function(int, int) onNextQ;
-  QuestionScreen({@required this.secID, @required this.pageID, @required this.bookmarked, @required this.onNextQ});
+  QuestionScreen({@required this.secID, @required this.pageID, @required this.onNextQ});
 
   @override
   _QuestionScreenState createState() => _QuestionScreenState(secID: secID, pageID: pageID, onNextQuestion: onNextQ);
@@ -30,26 +28,20 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
   int pageScore;
   int newAdditionalScore;
   int _selectedAnswer = 0;
-
-  final soundPlayer = AudioCache();
+  double _answersHeight; // = 440.0;
 
   List<Icon> _lstAnsIcons = [null,null,null,null];
   List<Color> _lstAnsColor = [null,null,null,null];
   List<bool> _lstAnsBlinkFlag = [false, false, false, false];
 
-//    var _pd = MediaQuery.of(context).padding;
-//    double _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
-//    _answersHeight = _answersHeight - kMainHeaderHeight - kNoBannerHeightForNow - 150.0;
-  double _answersHeight = 440.0; //TODO: need to be calculated.
-
   AnimationController controller;
+
   int get _timeLeft {
     Duration duration = controller.duration * controller.value;
     // case: timed out
     if(duration.inSeconds < 1) {
-      // Play sound
-      soundPlayer.play(kTimedOutSound);
-      soundPlayer.clearCache();
+      // Play the finish sound
+      playFinishSound();
       controller.stop(); // Stop Controller, so AnimatedBuilder won't do any more work.
       // Go to Score Summary Screen
       Future.delayed(Duration.zero, () {
@@ -71,13 +63,19 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     pageScore = DBService.instance.getCurrScore();
 
     // Countdown Controller
-    controller = AnimationController(vsync: this, duration: Duration(seconds: 21));
+    controller = AnimationController(vsync: this, duration: Duration(seconds: kTimeSecPerQuestion + 1));
     // Start countdown.
     controller.reverse(from: controller.value == 0.0 ? 1.0 : controller.value);
   }
 
   @override
   Widget build(BuildContext context) {
+
+    var _pd = MediaQuery.of(context).padding;
+    _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
+    _answersHeight = _answersHeight - AppBar().preferredSize.height - kQuestionHeight - 28
+                     - kNoBannerHeightForNow - 57; // - 150.0;
+
     // DEBUG:
     print('CORRECT ANSWER: Answer ${DBService.instance.getCorrectAnswer(pageID)+1} ');
 
@@ -115,30 +113,31 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                          children: <Widget>[
                                   Row(children: <Widget>[
                                     kFavoriteScoreIcon,
-                                    Text(addComma(DBService.instance.getCurrScore()),
+                                    Text(" " + addComma(DBService.instance.getCurrScore()),
                                          style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
                                     ),
                                   ],),
-                                  Row (children: <Widget> [  kTimerIcon,
-                                                             AnimatedBuilder(animation: controller, builder: (context, child) {
+                                  Row (children: <Widget> [kTimerIcon,
+                                                           AnimatedBuilder(animation: controller, builder: (context, child) {
                                                                return Text(' $_timeLeft',style: TextStyle(fontSize: 22.0, fontFamily: kDefaultFont,
                                                                                          color: (_timeLeft > 11) ? kColorWhite : (_timeLeft < 6) ? kColorThemeRed : kColorYellow,
                                                                                          fontWeight: FontWeight.w800));
                                                              })
-                                                            ]
+                                                           ]
                                   ),
                                  Text('${pageID+1}/$kNumberOfQuestionsPerSet', style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),), ],
                       ),
                     ),
                     //--> Question in Body
-                    // TODO: BUG HERE, WHEN QUESTION TEXT IS TOO LONG, IT will push Answer box out of the screen!!
                     Container (
                       alignment: Alignment.center,
-                      padding: EdgeInsets.symmetric(horizontal: 14.0,vertical: 18.0),
+                      height: kQuestionHeight,
+                      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 14.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
-                                                                  style: TextStyle(fontSize: 24.0,
-                                                                  color: kColorWhite, fontFamily: kDefaultFont,)),
+                                 children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
+                                                                         textAlign: TextAlign.center,
+                                                                         style: TextStyle(fontSize: 24.0, color: kColorWhite,
+                                                                                fontFamily: kDefaultFont,)),
                           )]),
                     ),
 
@@ -166,7 +165,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                          text: DBService.instance.getAnswer4Text(pageID),
                                          trailingIcon: _lstAnsIcons[3], blinkFlag: _lstAnsBlinkFlag[3],
                                          onPressed: () { _answerEntered(context, 3); },),
-                            SizedBox(height: 12.0,),
+                            SizedBox(height: 10.0,),
                             Visibility (
                               visible: _alreadyAnswered,
                               child: HeartbeatProgressIndicator(
@@ -180,24 +179,14 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                       ),
                     ),
             ],
-            )
-
-      ),
-        );
+            ),
 
 //      // *** END TOP LEVEL COLUMN ***
 //
-//      bottomNavigationBar: SizedBox(height: kNoBannerHeightForNow,), // Dummy area for Admob
-//
-//      floatingActionButton: FloatingActionButton.extended(
-//        backgroundColor: kColorWhite, //Color(0xfff4b890),// kColorYellow,
-//        icon: ((widget.bookmarked) ? kBookmarkedIcon: kUnbookmarkedIcon),
-//        label: Text(((widget.bookmarked) ? "Bookmarked" : "To bookmark"),
-//            style: kDefaultBlackTextStyle.copyWith(fontSize: 12.0, color: kStudySectionColor, fontWeight: FontWeight.w900)),
-//        onPressed: () { _toggleBookmark(secID, secQuestionID); },
-//      ),
-//      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-//    );
+            bottomNavigationBar: SizedBox(height: kNoBannerHeightForNow,
+                                 child: Container(color: kColorWhite, child: Text('TEST ME'),)), // Dummy area for Admob
+    ),
+    );
   }
 
   @override
@@ -224,8 +213,9 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
 
       // Case: C O R R E C T
       if (DBService.currQBanks[pageID].correctAnswer == selAns) {
-        // Sound - CORRECT SOUND
-        soundPlayer.play(kCorrectSound);
+        // Sound - CORRECT SOUNDS
+        playCorrectSound(pageID);
+
         // Score timeBonus, basicScore, correctQuestion
         DBService.currCorrectQ += 1;
         DBService.currTimeBonus += (_timeLeft > 10) ? 200 : ((_timeLeft > 5) ? 100 : 50);
@@ -249,7 +239,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
       } else {
         // Case: I N C O R R E C T (need to set Correct one and the Selected one)
         // Sound - INCORRECT SOUND
-        soundPlayer.play(kInCorrectSound);
+        playInCorrectSound();
         setState(() {
           _lstAnsIcons[correctAns] = kCorrectIcon;
           _lstAnsColor[correctAns] = kCorrectColor;
@@ -300,7 +290,6 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         continueButton,
       ],
     );
-
     // show the dialog
     showDialog(
       context: context,
@@ -309,13 +298,4 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
       },
     );
   }
-
-  String addComma(int score) {
-    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-    Function mathFunc = (Match match) => '${match[1]},';
-    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
-    return scoreWithComma;
-  }
-
 }
-

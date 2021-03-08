@@ -47,7 +47,6 @@ class _QuestionPageViewState extends State<QuestionPageView> {
               itemBuilder: (context, index) {
                             return QuestionScreen(secID: DBService.currSectionID,
                                                   pageID: index,
-                                                  bookmarked: true,
                                                   onNextQ: _callBackNextQuestion,
                                                  );
               },

@@ -11,7 +11,6 @@ const kColorThemeRed = Color(0xffBF1C38);
 const kColorThemeGreen =  Color(0xff8ABF1C);
 const kColorThemeTeal =  Color(0xff1CBFA3);
 
-//const kColorWhite = Colors.white70;
 const kColorBlack = Colors.black87;
 const kColorPureBlack = Colors.black;
 const kColorGrey = Colors.grey;
@@ -19,7 +18,6 @@ const kColorWhite = Colors.white;
 
 const kColorYellow = Colors.yellowAccent;
 const kColorRed = Colors.redAccent;
-
 const kCorrectColor = Colors.lightGreenAccent;
 const kIncorrectColor = Colors.pinkAccent;
 const kShowAnswerColor = Colors.yellowAccent;
@@ -47,11 +45,13 @@ const Icon kTimerIcon = Icon(Icons.timer, size: 24, color: kColorYellow);
 const Icon kBestIcon = Icon( Icons.grade, size: 30, color: kColorThemeRed);
 
 //--> S O U N D S
-const String kCorrectSound = 'sounds/Correct-answer.mp3';
+const String kCorrectSound1 = 'sounds/Correct-answer.mp3';
+const String kCorrectSound3 = 'sounds/Correct-Chime.mp3';
+const String kCorrectSound2 = 'sounds/Correct-MaleVoice.mp3';
 const String kInCorrectSound = 'sounds/Incorrect-answer.mp3';
 const String kTimedOutSound = 'sounds/Finish-answer.mp3';
 
-// --> Constants
+// --> C o n s t a n t - V a l u e s
 const int kNumberOfQuestionsPerSet = 20;
 const int kTimeSecPerQuestion = 20;
 const int kDelayBetweenQuestionMilliSec = 3000;
@@ -59,10 +59,10 @@ const String kSection1Name = "In TV Series Trivia";
 const String kSection2Name = "\'Who said this?\' Trivia";
 const List<String> kSectionNames = [kSection1Name, kSection2Name];
 
-const String kFanLevel1  = "\'Wow! You are the Biggest Fan!!\'";
-const String kFanLevel2  = "\'Not bad! Joey would be quite impressed with you.\'";
+const String kFanLevel1  = "\'WOW!! You are the Biggest Fan!!\'";
+const String kFanLevel2  = "\'Not bad! :) Joey would be quite impressed with you.\'";
 const String kFanLevel3  = "\'Hmm, try again? You\'ve probably only caught this show whenever it was on TV.\'";
-const String kFanLevel4  = "\'Oh! Dear, we have a problem!\' ";
+const String kFanLevel4  = "\'Oh Dear :( we have a problem!\' ";
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(
@@ -85,9 +85,13 @@ Widget kFriendsBanner = Container(
                                                        fontStyle: FontStyle.normal),),),
                         );
 
+const double kQuestionHeight = 142;
+const double kNoBannerHeightForNow = 50; // NoBanner for Now!
+
 // -------------------
-// TODO:
+// TODO: version 1.1
 // 1. A Feature to Share
 // 2. Silent Mode
-// 3.
+// 3. Admob
+// 4. ???
 // -------------------

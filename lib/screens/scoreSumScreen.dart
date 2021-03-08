@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:friendstrivia/models/argParameters.dart';
 import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
+import 'package:friendstrivia/resources/util.dart';
 
 class ScoreSumScreen extends StatefulWidget {
   @override
@@ -9,7 +10,6 @@ class ScoreSumScreen extends StatefulWidget {
 }
 
 class _ScoreSumScreenState extends State<ScoreSumScreen> {
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -45,14 +45,12 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                                          child: Text('Game Completed', style: TextStyle(fontFamily: kDefaultFont, color: kColorWhite,
                                                                                                   fontSize: 30.0, fontWeight: FontWeight.w600)),
                                                         ),
-
                                               genDivider(),
                                               genScoreRow("Basic Score:", DBService.currBasicScore, kBlueLightColor, 24.0),
                                               genScoreRow("Time Bonus: ", DBService.currTimeBonus, kBlueAccentColor, 24.0),
                                               genScoreRow("Final Score: ", DBService.currScore, kBlueLightColor, 30.0),
                                               genDivider(),
                                               genScoreRow("Best: ", DBService.currBestScore, kBlueAccentColor, 26.0),
-
                                               Expanded (
                                                 child: Container(
                                                   margin: EdgeInsets.all(8.0),
@@ -64,10 +62,8 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                     children: [ Row(crossAxisAlignment: CrossAxisAlignment.center,
                                                                 children: [Flexible (child:
-
                                                                                   Text(getFanMessage(), textAlign: TextAlign.center,
                                                                                   style: kDefaultTS.copyWith(fontSize: 25.0, color: kColorWhite),),
-
                                                                                 ),
                                                                           ],
                                                       ),],
@@ -84,8 +80,6 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kColorThemePurple, //kColorYellow,
-                    //border: Border.all(color: kColorBlack, width: 3),
-                    //borderRadius: BorderRadius.all(Radius.circular(18)),
                   ),
 
                   child: Row(
@@ -120,12 +114,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                             color: kColorThemeGreen,
                             onPressed: () async {
                               await DBService.instance.setCurrScore(0);
-                              try {
-                                int count = 0;
-                                Navigator.of(context).popUntil((_) => count++ >= 1); //2
-                              } catch (ex){
-                                print('Exception: $ex');
-                              }
+                              Navigator.pushReplacementNamed(context, '/mainmenu');
                             },
                           ),
                         ),
@@ -142,11 +131,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
   }
 
   Widget genScoreRow(String lbl, int score, Color color, double fontSize) {
-
-    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-    Function mathFunc = (Match match) => '${match[1]},';
-    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
-
+    String scoreWithComma = addComma(score);
     return Container (
            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0), color: color,
            child: Row(children: [

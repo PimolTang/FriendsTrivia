@@ -5,6 +5,7 @@ import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/widgets/RoundedMenuButton.dart';
 import '../models/dbService.dart';
 import '../resources/constances.dart';
+import '../resources/util.dart';
 
 class MainMenuScreen extends StatefulWidget {
   @override
@@ -153,13 +154,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
   }
 
-  String addComma(int score) {
-    RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-    Function mathFunc = (Match match) => '${match[1]},';
-    String scoreWithComma = '$score'.replaceAllMapped(reg, mathFunc);
-    return scoreWithComma;
-  }
-
 }
 
 // -----------------------
@@ -213,14 +207,12 @@ void showGameInfoDialog(BuildContext context) {
     title: Text("Game Information", style: kDefaultTS),
     content: Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               Text('This is a trivia-based game.',style: kDefaultWhiteTS),
-               Text('\nThe player can choose either',style: kDefaultWhiteTS),
-               Text('"In TV Series Friends Trivia" or "Who said this? Trivia",',style: kDefaultWhiteTS),
-               Text('\n20 of questions each game',style: kDefaultWhiteTS),
-               Text('You will have 20 seconds for each question.',style: kDefaultWhiteTS),
-               Text('\nFour possible answers are given.',style: kDefaultWhiteTS),
-               Text('\nYou will receive scores for every correct answer. ',style: kDefaultWhiteTS),
-        //     You'll also be given the ability to share your score with your Facebook friends.
+               Text('In this game, the player can choose either A) "In TV Series Friends Trivia" or B) "Who said this? Trivia",',style: kDefaultWhiteTS),
+               Text('\n* 20 of questions each game',style: kDefaultWhiteTS, textAlign: TextAlign.center,),
+               Text('\n* You will have 20 seconds for each question.', style: kDefaultWhiteTS, textAlign: TextAlign.center,),
+               Text('\n* Four possible answers are given.',style: kDefaultWhiteTS, textAlign: TextAlign.center),
+               Text('\n* You will receive scores for every correct answer. ',style: kDefaultWhiteTS, textAlign: TextAlign.center),
+        //     You'll also be given an ability to share your score with your Facebook friends.
         //     These features require Internet access.
                Text('\nThe game ends once you answer any question incorrectly, the time is up or if you answer ALL questions correctly!',style: kDefaultWhiteTS),
 
