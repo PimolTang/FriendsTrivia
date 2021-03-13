@@ -50,7 +50,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                               genScoreRow("Best: ", DBService.currBestScore, kBlueAccentColor, 24.0),
                                               Expanded (
                                                 child: Container(
-                                                    margin: EdgeInsets.all(6.0),
+                                                    margin: EdgeInsets.all(8.0),
                                                     alignment: Alignment.centerRight,
                                                     padding: EdgeInsets.symmetric(vertical: 2.0),
                                                     color: kBlueLightColor,
@@ -58,7 +58,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                                       mainAxisSize: MainAxisSize.max,
                                                       mainAxisAlignment: MainAxisAlignment.center,
                                                       children: [ Row(crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  children: [Flexible (child: Text(genFanMessage(), textAlign: TextAlign.center,
+                                                                  children: [Flexible(child: Text(genFanMessage(), textAlign: TextAlign.center,
                                                                                                    style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorWhite,
                                                                                                           fontStyle: FontStyle.italic),),
                                                                                       ),
@@ -81,39 +81,38 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children:  <Widget> [
-                        Material (
-                          color: kColorThemeGreen,
-                          borderRadius: BorderRadius.circular(10.0),
-                          elevation: 2.0,
-                          child: RaisedButton (
-                            child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
-                            color: kColorThemeGreen,
-                            onPressed: () async {
-                              // Reset CurrScore
-                              await DBService.instance.setCurrScore(0);
-                              await loadQuestionsForSecID(DBService.currSectionID);
-                              try {
-                                // Go to the same Section ID
-                                Navigator.pushNamed(context, '/questions');
-                              } catch (ex){
-                                print('Exception: $ex');
-                              }
-                            },
-                          ),
+                        ElevatedButton (
+                          child: Text(' Play Again ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(kColorThemeGreen),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                     RoundedRectangleBorder( borderRadius: BorderRadius.all(Radius.circular(12)),)
+                              )),
+
+                          onPressed: () async {
+                            // Reset CurrScore
+                            await DBService.instance.setCurrScore(0);
+                            await loadQuestionsForSecID(DBService.currSectionID);
+                            try {
+                              // Go to the same Section ID
+                              Navigator.pushNamed(context, '/questions');
+                            } catch (ex){
+                              print('Exception: $ex');
+                            }
+                          },
                         ),
 
-                        Material (
-                          color: kColorThemeGreen,
-                          borderRadius: BorderRadius.circular(10.0),
-                          elevation: 2.0,
-                          child: RaisedButton (
-                            child: Text('Main Menu', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
-                            color: kColorThemeGreen,
-                            onPressed: () async {
-                              await DBService.instance.setCurrScore(0);
-                              Navigator.pushReplacementNamed(context, '/mainmenu');
-                            },
-                          ),
+                        ElevatedButton (
+                          child: Text(' Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(kColorThemeGreen),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder( borderRadius: BorderRadius.all(Radius.circular(12)),)
+                              )),
+                          onPressed: () async {
+                            await DBService.instance.setCurrScore(0);
+                            Navigator.pushReplacementNamed(context, '/mainmenu');
+                          },
                         ),
                         ]
                   ),
