@@ -22,46 +22,44 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kColorThemePurple,
-        appBar: AppBar(title: Center( child: Text('F r i e n d s - T r i v i a - 2 0 2 1', style: TextStyle(color: kColorWhite,
-                                                            fontFamily: kDefaultFont, fontWeight: FontWeight.w900),)),
-                       backgroundColor: kColorThemeTeal,
-                      ),
-        body: Center (
-          child: Column (
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              //--> Section 1:
-              kFriendsBanner,
-              //--> Section 2:
-              Container (
-                alignment: Alignment.topCenter,
-                margin: EdgeInsets.symmetric(horizontal: 52.0, vertical: 10.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: kColorThemeLightPurple,
-                ),
-                child: Center(
-                    child: Text('\nHow Big Of \n A "Friends" Fan \nAre You Really?\n', textAlign: TextAlign.center,
-                           style: TextStyle(color: kColorThemeTeal, fontFamily: kGabrielWFont, fontWeight: FontWeight.w200, fontSize: 28.0),),
-                ),
-
+//        appBar: AppBar(title: Center(child: Text('F r i e n d s - T r i v i a - 2 0 2 1',
+//                                     style: TextStyle(color: kColorWhite,fontFamily: kDefaultFont,
+//                                                      fontWeight: FontWeight.w900),)),
+//                       backgroundColor: kColorThemeTeal),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget> [
+            //--> Section 1:
+            kFriendsBanner,
+            //--> Section 2:
+            Container(
+              alignment: Alignment.topCenter,
+              margin: EdgeInsets.only(top:0.0, left: 20.0, right: 20.0, bottom: 140.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color:  kColorThemePurple,
               ),
-              //--> Section 3:
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20.0),
-                child: TwinkleButton(
-                         buttonTitle:Text(' Get Started >> ', style:
-                                     TextStyle(color: kColorThemeLightPurple,fontFamily: kDefaultFont, fontSize: 20.0, fontStyle: FontStyle.italic),),
-                         buttonColor: kColorThemeGreen,
-                         onclickButtonFunction: () {
-                                    Navigator.pushNamed(context, '/mainmenu');
-                                  },
-                         durationTime: 2,
-                         twinkleTime: 350
-                        ),
-              )
-            ]
-          ),
+              child: Center(
+                  child: Text('\nHow Big Of \n A "Friends" Fan \nAre You Really?\n', textAlign: TextAlign.center,
+                         style: TextStyle(color: kColorWhite, fontFamily: kGabrielWFont, //kColorThemeTeal
+                         fontWeight: FontWeight.w200, fontSize: 30.0),),
+              ),
+            ),
+            //--> Section 3:
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.0),
+              child: TwinkleButton(
+                       buttonTitle:Text(' Get Started >> ', style:
+                                   TextStyle(color: kColorThemeLightPurple,fontFamily: kDefaultFont, fontSize: 20.0, fontStyle: FontStyle.italic),),
+                       buttonColor: kColorThemeGreen,
+                       onclickButtonFunction: () {
+                                  Navigator.pushNamed(context, '/mainmenu');
+                                },
+                       durationTime: 2,
+                       twinkleTime: 350
+                      ),
+            )
+          ]
         ),
       ),
     );
@@ -79,11 +77,11 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     //await DBService.instance.refreshTotalQuestionFromQuestionBank();
     return await DBService.instance.countQuestionBank();
   }
+
   // Read Questions from CSV file to SQL Lite database
   _loadCSVintoSQFLite() async {
     String _rawCSV = await DefaultAssetBundle.of(context).loadString('assets/rawQuestions.csv');
     _rawCSV = _rawCSV.replaceAll('%quote%', '\'');
-
     List<List<dynamic>> _csv = CsvToListConverter().convert(_rawCSV);
     // Skip i = 0 -- it's a header
     for (int i = 1; i < _csv.length; i++  ) {

@@ -74,20 +74,17 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     var _pd = MediaQuery.of(context).padding;
     _answersHeight = MediaQuery.of(context).size.height- _pd.top - _pd.bottom;
     _answersHeight = _answersHeight - AppBar().preferredSize.height - kQuestionHeight - 28
-                     - kNoBannerHeightForNow - 57; // - 150.0;
-
+                     - kNoBannerHeightForNow - 58 - 66;
     // DEBUG:
-    print('CORRECT ANSWER: Answer ${DBService.instance.getCorrectAnswer(pageID)+1} ');
+    print('CORRECT ANSWER: Answer ${DBService.instance.getCorrectAnswer(pageID)+1} -> ${DBService.currQBanks[pageID].correctAnswer + 1} <- ');
 
     return SafeArea (
           child: Scaffold(
           backgroundColor: kColorThemeLightPurple,// kColorGrey,
           appBar: AppBar(
               leading: GestureDetector(
-                        child: Row(children: <Widget>[ //Icon(Icons.reply, color: kColorWhite),
-                                                        SizedBox(child: Icon(Icons.settings, color: kColorBlack,),
-                                                                 width: 50.0),
-                                                      ]),
+                        child: Row(children: <Widget>[SizedBox(child: Icon(Icons.settings, color: kColorBlack,),
+                                                               width: 50.0),]),
                         onTap: () {
                           controller.stop();
                           pauseAlertDialog(context);
@@ -95,12 +92,15 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                         ),
               iconTheme: IconThemeData(color: kColorThemeGreen),
               backgroundColor: kColorThemeTeal,
-              title: Column (
-                mainAxisAlignment: MainAxisAlignment.center, // .start,
-                children:
-                <Widget>[
-                  Text(kSectionNames[secID-1], style: kDefaultTS), //, style: kDefaultBlackTextStyle),
-                ],
+              title: Padding(padding: EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row (
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly, // .start,
+                          children:
+                          <Widget>[
+                            Text(kSectionNames[secID-1] , style: kDefaultTS),
+                            getIconSection(),//, style: kDefaultBlackTextStyle),
+                          ],
+                        ),
               )),
 
             //--> SECTION: BODY
@@ -113,7 +113,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                          children: <Widget>[
                                   Row(children: <Widget>[
                                     kFavoriteScoreIcon,
-                                    Text(" " + addComma(DBService.instance.getCurrScore()),
+                                    Text("  " + addComma(DBService.instance.getCurrScore()),
                                          style: TextStyle(fontSize: 18.0, fontFamily: kDefaultFont, color: kColorWhite, fontWeight: FontWeight.w600),
                                     ),
                                   ],),
@@ -133,7 +133,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                       alignment: Alignment.center,
                       height: kQuestionHeight,
                       padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 14.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                      child: Row(mainAxisAlignment: MainAxisAlignment.start,
                                  children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
                                                                          textAlign: TextAlign.center,
                                                                          style: TextStyle(fontSize: 24.0, color: kColorWhite,
@@ -182,17 +182,15 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
             ),
 
 //      // *** END TOP LEVEL COLUMN ***
-//
             bottomNavigationBar: SizedBox(height: kNoBannerHeightForNow,
                                  child: Container(color: kColorWhite, child: Text('TEST ME'),)), // Dummy area for Admob
     ),
     );
   }
-
   @override
   void dispose() {
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
 // -------------------------------------------
@@ -217,13 +215,20 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         playCorrectSound(pageID);
 
         // Score timeBonus, basicScore, correctQuestion
-        DBService.currCorrectQ += 1;
-        DBService.currTimeBonus += (_timeLeft > 10) ? 200 : ((_timeLeft > 5) ? 100 : 50);
-        DBService.currBasicScore += 50;
-        newAdditionalScore = (_timeLeft > 10) ? 250 : ((_timeLeft > 5) ? 150 : 100);
+        //
+        // BasicScore = 50/question --> 100
+        // TimeBonus = Time>18 --> +50, Time>10 --> +20, Time<10 --> +10
 
-        print('DEBUG: TIME REMAINING = $_timeLeft' );
-        print('DEBUG: ADDITIONAL SCORE: $newAdditionalScore');
+        // For Summary Screen
+        DBService.currCorrectQ += 1;
+        DBService.currTimeBonus += (_timeLeft > 17) ? 50 : ((_timeLeft > 9) ? 20 : 10);
+        DBService.currBasicScore += 100;
+
+        // Page's score
+        newAdditionalScore = (_timeLeft > 17) ? 150 : ((_timeLeft > 9) ? 120 : 110);
+
+        //print('DEBUG: TIME REMAINING = $_timeLeft' );
+        //print('DEBUG: ADDITIONAL SCORE: $newAdditionalScore');
         await DBService.instance.setCurrScore(pageScore + newAdditionalScore);
 
         setState(() {
@@ -283,6 +288,7 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       backgroundColor: kColorThemeGreen,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
       title: Text("Finish Game?", style: kDefaultTS.copyWith(color: kColorPureBlack)),
       content: Text("Do you wish to end your game with \nthe current score?", style: kDefaultTS.copyWith(color: kColorWhite)),
       actions: [
@@ -293,9 +299,14 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     // show the dialog
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return alert;
       },
     );
+  }
+
+  Widget getIconSection() {
+      return (secID == 1)? Icon(kIconSection1, color: Colors.white70,): Icon(kIconSection2, color: Colors.white70,);
   }
 }

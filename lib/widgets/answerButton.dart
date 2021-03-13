@@ -35,9 +35,6 @@ class _AnswerButtonState extends State<AnswerButton> with SingleTickerProviderSt
     } else {
       _animationController.forward(from: 1.0);
     }
-
-    print('AnswerWidget: ' + widget.text);
-
     return FadeTransition(
           opacity: _animationController,
           child: GestureDetector(

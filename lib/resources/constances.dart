@@ -31,9 +31,12 @@ const kGabrielWFont = 'GabrielW';
 
 //--> T E X T - S T Y L E S
 const kDefaultTS = TextStyle(fontFamily: kDefaultFont);
-const kDefaultWhiteTS = TextStyle(fontFamily: kDefaultFont, color: kColorWhite);
+const kDefaultWhiteTS = TextStyle(fontFamily: kDefaultFont, color: kColorWhite, fontSize: 18.0);
 
 //--> I C O N S
+const IconData kIconSection1 = Icons.weekend_outlined;
+const IconData kIconSection2 = Icons.question_answer_rounded;
+
 const Icon kCorrectIcon = Icon(Icons.check, color: Colors.black87,);
 const Icon kIncorrectIcon = Icon(Icons.clear, color: Colors.white,);
 
@@ -52,22 +55,22 @@ const String kInCorrectSound = 'sounds/Incorrect-answer.mp3';
 const String kTimedOutSound = 'sounds/Finish-answer.mp3';
 
 // --> C o n s t a n t - V a l u e s
-const int kNumberOfQuestionsPerSet = 20;
-const int kTimeSecPerQuestion = 20;
+const int kNumberOfQuestionsPerSet = 20; // 191; // 20;  //Section 1 and 2: 191 and 75
+const int kTimeSecPerQuestion = 20; //TODO CHANGE BACK to 20;
 const int kDelayBetweenQuestionMilliSec = 3000;
 const String kSection1Name = "In TV Series Trivia";
 const String kSection2Name = "\'Who said this?\' Trivia";
 const List<String> kSectionNames = [kSection1Name, kSection2Name];
 
-const String kFanLevel1  = "\'WOW!! You are the Biggest Fan!!\'";
-const String kFanLevel2  = "\'Not bad! :) Joey would be quite impressed with you.\'";
-const String kFanLevel3  = "\'Hmm, try again? You\'ve probably only caught this show whenever it was on TV.\'";
-const String kFanLevel4  = "\'Oh Dear :( we have a problem!\' ";
+const String kFanMsgLevel1  = "\'WOW!! You are the Biggest Fan!!\'";
+const String kFanMsgLevel2  = "\'Not bad! :) Joey would be quite impressed with you.\'";
+const String kFanMsgLevel3  = "\'Hmm.., You\'ve probably only caught this show whenever it was on TV.\'";
+const String kFanMsgLevel4  = "\'Oh Dear... We have a problem!\' ";
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(
-                          margin: EdgeInsets.all(20.0),
-                          height: 100,
+                          margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 20.0),
+                          height: 110,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -85,7 +88,7 @@ Widget kFriendsBanner = Container(
                                                        fontStyle: FontStyle.normal),),),
                         );
 
-const double kQuestionHeight = 142;
+const double kQuestionHeight = 156;
 const double kNoBannerHeightForNow = 0; //50; // NoBanner for Now!
 
 // -------------------
@@ -93,5 +96,5 @@ const double kNoBannerHeightForNow = 0; //50; // NoBanner for Now!
 // 1. A Feature to Share
 // 2. Silent Mode
 // 3. Admob
-// 4. ???
+// 4. Ticket system??
 // -------------------

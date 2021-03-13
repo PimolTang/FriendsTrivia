@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:friendstrivia/models/argParameters.dart';
 import 'package:friendstrivia/resources/constances.dart';
-import 'package:friendstrivia/widgets/RoundedMenuButton.dart';
+import 'package:friendstrivia/widgets/roundedMenuButton.dart';
 import '../models/dbService.dart';
 import '../resources/constances.dart';
 import '../resources/util.dart';
@@ -96,24 +95,24 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                       children: <Widget>[
                             //--> Section 2.1:
                             RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
-                                menuIcon: Icons.weekend_outlined,
-                                text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorWhite),),
+                                menuIcon: kIconSection1,
+                                text: Text(kSection1Name, style: kDefaultTS.copyWith(color: kColorWhite,fontSize: 18.0),),
                                 onPressed: () async {
                                         // Set SectionID = 1
                                         await DBService.instance.setcurrSectionID(1);
                                         await loadQuestionsForSecID(1);
-                                        Navigator.pushNamed(context, '/questions', arguments: ArgParameters(1,0));
+                                        Navigator.pushNamed(context, '/questions');
                                       },
                                 ),
                             //--> Section 2.2:
                             RoundedMenuButton(bgColor: kColorThemeTeal,iconColor: kColorThemePurple,
-                              menuIcon: Icons.camera,
-                                text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorWhite)),
+                                menuIcon: kIconSection2,
+                                text: Text(kSection2Name, style: kDefaultTS.copyWith(color: kColorWhite, fontSize: 18.0)),
                                 onPressed: () async {
                                         // Set SectionID = 2
                                         await DBService.instance.setcurrSectionID(2);
                                         await loadQuestionsForSecID(2);
-                                        Navigator.pushNamed(context, '/questions', arguments: ArgParameters(2,0)); //, arguments: currStatus);
+                                        Navigator.pushNamed(context, '/questions');
                                       },
                             ),
                           ],
@@ -139,7 +138,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
 //                )
 
               ]
-
           ),
         ),
       ),
@@ -147,12 +145,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
   }
 
   // Functions:
-  loadQuestionsForSecID(int _secID) async {
-    await DBService.instance.refreshQuestionBankRandomly(_secID).then((value) {
-      DBService.currQBanks = value;
-    });
-    Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
-  }
+//  loadQuestionsForSecID(int _secID) async {
+//    await DBService.instance.refreshQuestionBankRandomly(_secID).then((value) {
+//      DBService.currQBanks = value;
+//    });
+//    Timer (Duration(milliseconds: 500), () { DBService.instance.setcurrSectionID(_secID); });
+//  }
 
 }
 
@@ -180,13 +178,13 @@ void resetBestScoreAlertDialog(BuildContext context) {
     backgroundColor: kColorThemeGreen,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24.0))),
     title: Text("Reset your Best Score?", style: kDefaultTS.copyWith(color: kColorPureBlack)),
-    content: Text("Do you wish to set your Best Score to zero?", style: kDefaultTS.copyWith(color: kColorWhite)),
+    content: Text("Do you wish to set your Best Score to zero?", style: kDefaultWhiteTS),
     actions: [cancelButton, continueButton],
   );
-
   // show the dialog
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return alert;
     },
@@ -207,17 +205,15 @@ void showGameInfoDialog(BuildContext context) {
     title: Text("Game Information", style: kDefaultTS),
     content: Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
-               Text('In this game, the player can choose either A) "In TV Series Friends Trivia" or B) "Who said this? Trivia",',style: kDefaultWhiteTS),
-               Text('\n* 20 of questions each game',style: kDefaultWhiteTS, textAlign: TextAlign.center,),
+               Text('In this game, the player can choose either A) "In TV Series Friends Trivia" or B) "Who said this? Trivia": ',style: kDefaultWhiteTS),
+               Text('\n* 20 of questions each game.',style: kDefaultWhiteTS, textAlign: TextAlign.center,),
                Text('\n* You will have 20 seconds for each question.', style: kDefaultWhiteTS, textAlign: TextAlign.center,),
                Text('\n* Four possible answers are given.',style: kDefaultWhiteTS, textAlign: TextAlign.center),
                Text('\n* You will receive scores for every correct answer. ',style: kDefaultWhiteTS, textAlign: TextAlign.center),
         //     You'll also be given an ability to share your score with your Facebook friends.
         //     These features require Internet access.
                Text('\nThe game ends once you answer any question incorrectly, the time is up or if you answer ALL questions correctly!',style: kDefaultWhiteTS),
-
                ]),
-
     actions: [
       continueButton,
     ],
@@ -226,6 +222,7 @@ void showGameInfoDialog(BuildContext context) {
   // show the dialog
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return alert;
     },
