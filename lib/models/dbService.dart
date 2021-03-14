@@ -104,6 +104,11 @@ class DBService {
 
     String baseStmt = "SELECT * FROM $_tableNameQuestionBank where sectionID = $secID " +
                       "and gotSelected = 0 order by RANDOM() LIMIT $kNumberOfQuestionsPerSet";
+
+    // TODO !! CHANGE BACK!!
+    baseStmt = "SELECT * FROM $_tableNameQuestionBank where sectionID = $secID " +
+        "and gotSelected = 0";
+
     Database db  = await instance.database;
     List<Map> rs = await db.rawQuery(baseStmt);
 
@@ -182,151 +187,9 @@ class DBService {
     Database db = await instance.database;
     await db.rawUpdate('UPDATE $_tableNameScore SET score=?', [newValue]);
   }
-
-//  Future<List<Map<String, dynamic>>> getQuestionSetFromStatusTable() async {
-//    Database db  = await instance.database;
-//    return await db.rawQuery('Select currQuestionSet, currID from $_tableNameStatus');
-//  }
-//
-//  void updateCurrQuestionSetID_from_StatusTable () async {
-//    // Get CurrentSetID from 'Status' table and set it to 'currQuestionSet' parameter.
-//    List<Map<String, dynamic>> currQSet_statusTable = await DBService.instance.getQuestionSetFromStatusTable();
-//    currQuestionSet = currQSet_statusTable[0]['currQuestionSet'];
-//    currID = currQSet_statusTable[0]['currID'];
-//  }
-//
-//  // QUERY
-//  Future <List<Map<String, dynamic>>> queryCurrentScore() async {
-//    Database db  = await instance.database;
-//    return await db.rawQuery('Select score from $_tableNameScore Where QuestionSet = ?', [currQuestionSet]);
-//  }
-//
-//  // QUERY
-//  Future <List<Map<String, dynamic>>> queryAllScoresDateTime() async {
-//    Database db  = await instance.database;
-//    return await db.rawQuery('Select dateTime, score, ausValueScore from $_tableNameScore');
-//  }
-//
-//  Future <List<Map<String, dynamic>>> queryAdhoc() async {
-//    Database db  = await instance.database;
-//    return await db.rawQuery('Select questionID, isCorrect from $_tableNameQuestionBank WHERE questionSet = 10');
-//  }
-//
-//  // ------------------------------------------------
-//  // Load Question Data into QuestionBank Model
-//  // ------------------------------------------------
-//  void refreshQuestionBankByQSet (int qSet) async {
-//    Database db  = await instance.database;
-//    List<Map> recSet = await db.rawQuery('SELECT * FROM $_tableNameQuestionBank where questionSet = $qSet');
-//    List<QuestionBank> qb = new List();
-//    for (int i = 0; i < recSet.length; i++) {
-//      qb.add(new QuestionBank(recSet[i]["questionSet"], recSet[i]["questionID"],
-//          recSet[i]["section"], recSet[i]["question"],
-//          recSet[i]["answer1"], recSet[i]["answer2"],
-//          recSet[i]["answer3"], recSet[i]["answer4"],
-//          recSet[i]["correctAnswer"], recSet[i]["selectedAnswer"],
-//          recSet[i]["isCorrect"], recSet[i]["skipReview"],
-//          recSet[i]["inBonusSection"], recSet[i]["ausValueSelectedAnswer"],
-//          recSet[i]["ausValueIsCorrect"])
-//      );
-//    }
-//    currQBanks = qb;
-//  }
-//
-//  // -------------------------------------------------
-//  // Load Question Data into FailsQuestionBank Model
-//  // -------------------------------------------------
-//  void refreshFailsQuestionBank() async {
-//    Database db  = await instance.database;
-//    List<Map> recSet = await db.rawQuery('SELECT * FROM $_tableNameQuestionBank where selectedAnswer !=0 and isCorrect = "0" and skipReview = "0" ');
-//    List<QuestionBank> fqb = new List();
-//    for (int i = 0; i < recSet.length; i++) {
-//      fqb.add(new QuestionBank(recSet[i]["questionSet"], recSet[i]["questionID"],
-//          recSet[i]["section"], recSet[i]["question"],
-//          recSet[i]["answer1"], recSet[i]["answer2"],
-//          recSet[i]["answer3"], recSet[i]["answer4"],
-//          recSet[i]["correctAnswer"], recSet[i]["selectedAnswer"],
-//          recSet[i]["isCorrect"], recSet[i]["skipReview"],
-//          recSet[i]["inBonusSection"], recSet[i]["ausValueSelectedAnswer"],
-//          recSet[i]["ausValueIsCorrect"])
-//      );
-//    }
-//    currTempQBanks = fqb;
-//  }
-
     // INSERT
     Future<int> insert(Map<String, dynamic> row) async {
       Database db = await instance.database;
       return await db.insert(_tableNameQuestionBank, row);
     }
-  //}
-//
-//  // UPDATE --
-//  void updateSelectedAnswer(int qSet, int qID, int newValue) async {
-//    Database db  = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET selectedAnswer = ? '
-//        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
-//  }
-//  // UPDATE --
-//  void updateIsCorrect(int qSet, int qID, int newValue) async {
-//    Database db  = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET isCorrect = ? '
-//        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
-//  }
-
-//  // GET AusValueSelectedAnswer -- to remove later
-//  Future<int> getAusValueSelectedAnswer (int qSet, int qID) async {
-//    Database db  = await instance.database;
-//    List<Map> qb = await db.rawQuery("SELECT * FROM $_tableNameQuestionBank where questionSet = $qSet and questionID = $qID");
-//    return await qb[0]["ausValueSelectedAnswer"];
-//  }
-//
-//  // UPDATE --
-//  void updateSkipReview(int qSet, int qID, int newValue) async {
-//    Database db  = await instance.database;
-//    await db.rawUpdate('UPDATE $_tableNameQuestionBank SET skipReview = ? '
-//        'WHERE questionSet = ? AND questionID = ?', [newValue, qSet, qID]);
-//  }
-//
-//  // SAVE total SCORE TO SCORE Table
-//  void saveScoreFromQuestionBank(int _score, int _aVScore) async {
-//    // 1. Get Time
-//    String currDateTime = DateFormat('d MMM y').add_jm().format(DateTime.now());
-//    // 2. CREATE DB Object and Update Score
-//    Database db  = await instance.database;
-//    db.rawUpdate('''
-//      UPDATE $_tableNameScore
-//      SET score = ?, ausValueScore = ?, dateTime = ?
-//      WHERE questionSet = ?
-//      ''', [_score, _aVScore, currDateTime, currQuestionSet]
-//    );
-//  }
-//
-//  void clearAllAnswers() async {
-//    Database db  = await instance.database;
-//    try {
-//      // Update QuestionBank
-//      await db.rawUpdate('Update $_tableNameQuestionBank Set selectedAnswer = 0, isCorrect = 0, skipReview = 0');
-//      // Update Score
-//      await db.rawUpdate(
-//          'Update $_tableNameScore Set score = -1, dateTime = "", ausValueScore = 0');
-//      // Update Status
-//      await db.rawUpdate(
-//          'Update $_tableNameStatus Set currQuestionSet = 1, currID = 0');
-//    } catch (ex) {
-//      print("Exception: $ex");
-//    }
-//  }
-//
-//  void clearAusValueAnswers() async {
-//    Database db = await instance.database;
-//    try {
-//      await db.rawUpdate('Update $_tableNameQuestionBank Set ausValueSelectedAnswer = 0, ausValueIsCorrect = 0');
-//    } catch (ex) {
-//      print("Exception: $ex");
-//    }
-//    // Clear AusValue Score and reset nextUnansweredAusValueQuestion (in memory)
-//    currAusValueScore = 0;
-//    nextUnansweredAusValueQuestion = -1;
-//  }
 }

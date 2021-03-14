@@ -4,6 +4,7 @@ import 'package:friendstrivia/models/dbService.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/screens/questionScreen.dart';
 import '../resources/constances.dart';
+import '../resources/util.dart';
 
 class QuestionPageView extends StatefulWidget {
    @override
@@ -31,7 +32,7 @@ class _QuestionPageViewState extends State<QuestionPageView> {
           child: PageView.builder(
               controller: (_pageController = PageController(initialPage: 0)),
               scrollDirection: Axis.horizontal,
-              physics: NeverScrollableScrollPhysics(), //AlwaysScrollableScrollPhysics(),  //TODO
+              physics: AlwaysScrollableScrollPhysics(),  //TODO NeverScrollableScrollPhysics()
               itemCount: kNumberOfQuestionsPerSet,
               itemBuilder: (context, index) {
                             return QuestionScreen(secID: DBService.currSectionID,
@@ -55,6 +56,11 @@ class _QuestionPageViewState extends State<QuestionPageView> {
           _pageController.jumpToPage(qID + 1);
       });
     }  else {
+      // Play sound when all questions answered
+      Timer(Duration(milliseconds: 1500), () {
+        playFinishSound();
+      });
+
       // In case of after 'kNumberOfQuestionsPerSet', to ensure Best Score,
       // since after page #kNumberOfQuestionsPerSet, onPageChanged() won't  be called
       await DBService.instance.ensureBestScore(DBService.instance.getCurrScore());

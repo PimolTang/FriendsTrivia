@@ -30,7 +30,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                         Container(
                             margin: EdgeInsets.all(20.0),
                             alignment: Alignment.center,
-                            height: 380,
+                            height: 320, // 380
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: kBlueLightColor,
@@ -57,10 +57,12 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                                     child: Column(
                                                       mainAxisSize: MainAxisSize.max,
                                                       mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [ Row(crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: [ Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
                                                                   children: [Flexible(child: Text(genFanMessage(), textAlign: TextAlign.center,
-                                                                                                   style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorWhite,
-                                                                                                          fontStyle: FontStyle.italic),),
+                                                                                                  style: kDefaultTS.copyWith(fontSize: 24.0, color: kColorWhite,
+                                                                                                         fontStyle: FontStyle.italic),),
                                                                                       ),
                                                                             ],
                                                                 ),],
@@ -72,7 +74,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                                         ),
                 //--> Line 5:
                 Container (
-                  margin: EdgeInsets.all(20.0),
+                  margin: EdgeInsets.fromLTRB(20.0,10.0,20.0,2.0),
                   //height: 400,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -101,7 +103,6 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
                             }
                           },
                         ),
-
                         ElevatedButton (
                           child: Text(' Main Menu ', style: TextStyle(color: kColorBlack, fontSize: 18.0),),
                           style: ButtonStyle(
@@ -124,6 +125,7 @@ class _ScoreSumScreenState extends State<ScoreSumScreen> {
     );
   }
 
+  // Functions:
   Widget genScoreRow(String lbl, int score, Color color, double fontSize) {
     String scoreWithComma = addComma(score);
     return Container (

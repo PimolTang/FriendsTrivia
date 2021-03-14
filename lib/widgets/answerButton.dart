@@ -42,7 +42,7 @@ class _AnswerButtonState extends State<AnswerButton> with SingleTickerProviderSt
             duration: 500,
             curve: Curves.linear,
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 1.0),
+              margin: EdgeInsets.symmetric(vertical: 6.0, horizontal: 1.0),
               decoration: BoxDecoration(
                   color: widget.color,
                   borderRadius: BorderRadius.all(Radius.circular(16.0)),
@@ -52,7 +52,8 @@ class _AnswerButtonState extends State<AnswerButton> with SingleTickerProviderSt
                       spreadRadius: 1.2),
                   ]),
               child: ListTile(
-                title: Center (child: Text(widget.text, style: TextStyle(fontFamily: kDefaultFont, fontSize: 20.0))), //, style: kAnswerTextStyle,),
+                title: Center (child: Text(widget.text, textAlign: TextAlign.center,
+                               style: TextStyle(fontFamily: kDefaultFont, fontSize: 20.0))), //, style: kAnswerTextStyle,),
                 trailing: widget.trailingIcon,
               ),
             ),

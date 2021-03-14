@@ -29,20 +29,21 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget> [
+            SizedBox(height: 20.0,),
             //--> Section 1:
             kFriendsBanner,
             //--> Section 2:
             Container(
               alignment: Alignment.topCenter,
-              margin: EdgeInsets.only(top:0.0, left: 20.0, right: 20.0, bottom: 140.0),
+              margin: EdgeInsets.only(top:0.0, left: 10.0, right: 10.0, bottom: 140.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color:  kColorThemePurple,
               ),
               child: Center(
-                  child: Text('\nHow Big Of \n A "Friends" Fan \nAre You Really?\n', textAlign: TextAlign.center,
-                         style: TextStyle(color: kColorWhite, fontFamily: kGabrielWFont, //kColorThemeTeal
-                         fontWeight: FontWeight.w200, fontSize: 30.0),),
+                  child: Text('\nHow Big Of \nA "Friends" Fan Are You?\n', textAlign: TextAlign.center,
+                         style: TextStyle(color: kColorWhite, fontFamily: kGabrielWFont,
+                         fontWeight: FontWeight.w200, fontSize: 26.0),),
               ),
             ),
             //--> Section 3:

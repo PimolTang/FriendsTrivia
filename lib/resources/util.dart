@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:audioplayers/audio_cache.dart';
 import 'package:friendstrivia/resources/constances.dart';
 import 'package:friendstrivia/models/dbService.dart';

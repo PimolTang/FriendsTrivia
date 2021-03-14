@@ -55,17 +55,17 @@ const String kInCorrectSound = 'sounds/Incorrect-answer.mp3';
 const String kTimedOutSound = 'sounds/Finish-answer.mp3';
 
 // --> C o n s t a n t - V a l u e s
-const int kNumberOfQuestionsPerSet = 20; // 191; // 20;  //Section 1 and 2: 191 and 75
+const int kNumberOfQuestionsPerSet = 5; // 191; // 20;  //Section 1 and 2: 191 and 75
 const int kTimeSecPerQuestion = 20; //TODO CHANGE BACK to 20;
 const int kDelayBetweenQuestionMilliSec = 3000;
 const String kSection1Name = "In TV Series Trivia";
 const String kSection2Name = "\'Who said this?\' Trivia";
 const List<String> kSectionNames = [kSection1Name, kSection2Name];
 
-const String kFanMsgLevel1  = "\'WOW!! You are the Biggest Fan!!\'";
-const String kFanMsgLevel2  = "\'Not bad! :) Joey would be quite impressed with you.\'";
-const String kFanMsgLevel3  = "\'Hmm.., You\'ve probably only caught this show whenever it was on TV.\'";
-const String kFanMsgLevel4  = "\'Oh Dear... We have a problem!\' ";
+const String kFanMsgLevel1  = "WOW!! You are the Biggest Fan!!";
+const String kFanMsgLevel2  = "Not bad! :) Joey would be quite impressed with you.";
+const String kFanMsgLevel3  = "Hmm..., You\'ve probably only caught this show whenever it was on TV.";
+const String kFanMsgLevel4  = "Oh Dear... We have a problem! ";
 
 // --> Friends Banner
 Widget kFriendsBanner = Container(

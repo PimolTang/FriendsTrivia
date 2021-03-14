@@ -51,14 +51,11 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     return duration.inSeconds;  // case: not timed out yet - to return Second(s) left
   }
 
-//  //'globalKey' to be used in Scaffold's key for SnackBar
-//  final _globalKey = GlobalKey<ScaffoldState>();
-
   @override
   void initState() {
     super.initState();
     _lstAnsColor.fillRange(0, 4, kColorThemeTeal);
-    _lstAnsIcons.fillRange(0, 4, null); //Icon(Icons.check, color: kColorThemeTeal,));
+    _lstAnsIcons.fillRange(0, 4, null);
     _lstAnsBlinkFlag.fillRange(0, 4, false);
     pageScore = DBService.instance.getCurrScore();
 
@@ -132,8 +129,8 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                     Container (
                       alignment: Alignment.center,
                       height: kQuestionHeight,
-                      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 14.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.start,
+                      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.center,
                                  children: <Widget>[Flexible(child: Text(DBService.instance.getQuestionText(pageID),
                                                                          textAlign: TextAlign.center,
                                                                          style: TextStyle(fontSize: 24.0, color: kColorWhite,
@@ -166,10 +163,10 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
                                          trailingIcon: _lstAnsIcons[3], blinkFlag: _lstAnsBlinkFlag[3],
                                          onPressed: () { _answerEntered(context, 3); },),
                             SizedBox(height: 10.0,),
-                            Visibility (
+                            Visibility(
                               visible: _alreadyAnswered,
                               child: HeartbeatProgressIndicator(
-                                startScale: 0.8, endScale: 2.2,
+                                startScale: 0.7, endScale: 2.0,
                                 duration: Duration(seconds: 1),
                                 child: correctOrIncorrect,
                               ),
@@ -214,11 +211,11 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         // Sound - CORRECT SOUNDS
         playCorrectSound(pageID);
 
-        // Score timeBonus, basicScore, correctQuestion
+        // Scores: timeBonus, basicScore, correctQuestion
         //
         // BasicScore = 50/question --> 100
         // TimeBonus = Time>18 --> +50, Time>10 --> +20, Time<10 --> +10
-
+        //
         // For Summary Screen
         DBService.currCorrectQ += 1;
         DBService.currTimeBonus += (_timeLeft > 17) ? 50 : ((_timeLeft > 9) ? 20 : 10);
@@ -243,8 +240,12 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
         onNextQuestion(pageID, kDelayBetweenQuestionMilliSec);
       } else {
         // Case: I N C O R R E C T (need to set Correct one and the Selected one)
-        // Sound - INCORRECT SOUND
+        // Sound - INCORRECT SOUND and FINISH SOUND
         playInCorrectSound();
+        Timer(Duration(milliseconds: 2500), () {
+          playFinishSound();
+        });
+
         setState(() {
           _lstAnsIcons[correctAns] = kCorrectIcon;
           _lstAnsColor[correctAns] = kCorrectColor;
@@ -278,6 +279,9 @@ class _QuestionScreenState extends State<QuestionScreen> with SingleTickerProvid
     Widget continueButton = FlatButton(
       child: Text("End Now", style: kDefaultTS.copyWith(color: kColorBlack),),
       onPressed: () {
+        // Play Finish Sound
+        playFinishSound();
+        // Go to ScoreSum screen
         Navigator.of(context).pop();
         Timer(Duration(milliseconds: 100), () {
           Navigator.of(context).pop();
